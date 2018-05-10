@@ -34,18 +34,18 @@ def main():
         # notify master node to create deployment
         socket.send_string('scale-in')
         socket.recv_string()
-        time.sleep(20)
+        time.sleep(10)
         name = 'source' + str(i)
         run_container(name, start, end)
         start = end + 1
         end = end * i
-        time.sleep(60)
+        time.sleep(10)
     time.sleep(10)
     for i in range(5):
         # notify master node to delete deployment
         socket.send_string('scale-out')
         socket.recv_string()
-        time.sleep(30)
+        time.sleep(10)
 
 
 main()
