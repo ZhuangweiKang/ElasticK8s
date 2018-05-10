@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operator-deployment
+  labels:
+    app: operator
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: operator
+  template:
+    metadata:
+      labels:
+        app: operator
+    spec:
+      containers:
+      - name: operator
+        image: zhuangweikang/streamingml-operator
+        ports:
+        - containerPort: 2341
+        tty: true
+        stdin: true
+        commands: ["/bin/bash"]
