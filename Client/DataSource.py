@@ -28,8 +28,9 @@ def send_data(socket, start, end):
                 data = {'data': line.strip(), 'time': time.time()}
                 data = simplejson.dumps(data)
                 socket.send_string(data)
-                socket.recv_string()
-                time.sleep(10)
+                msg = socket.recv_string()
+                print('Recv msg from worker node:' + msg)
+                time.sleep(3)
 
 
 def main():
