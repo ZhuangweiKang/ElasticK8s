@@ -75,6 +75,8 @@ def main():
             os.system(drop_deployment)
             time.sleep(10)
             count -= 1
+        else:
+            print('Current max number is ' + msg)
         socket.send_string('Ack')
 
 
