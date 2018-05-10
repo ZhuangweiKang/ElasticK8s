@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.6
 # -*- coding: utf-8 -*-
 
 import docker
@@ -13,7 +13,7 @@ haproxy_port = '2341'
 
 
 def run_container(name, start, end):
-    command = 'python3 /home/DataSource.py -a ' + haproxy_address + ' -p' + haproxy_port + ' -s' + start + ' -e' + end
+    command = 'python3 /home/DataSource.py -a ' + haproxy_address + ' -p' + haproxy_port + ' -s' + str(start) + ' -e' + str(end)
     client = docker.from_env()
     client.containers.run(image=image_name, detach=True, name=name, tty=True, stdin_open=True, command=command)
 
