@@ -67,9 +67,11 @@ def main():
             pod_label = 'worker' + str(count)
             container_name = 'worker' + str(count)
             create_deployment(deployment_name, pod_label, container_name)
+            print('Create new deployment...')
         elif msg == 'scale-out':
             deployment_name = 'worker' + str(count) + '-deployment'
             drop_deployment = 'kubectl delete deployment ' + deployment_name
+            print('Delete deployment ' + deployment_name)
             os.system(drop_deployment)
             time.sleep(10)
             count -= 1
