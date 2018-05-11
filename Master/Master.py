@@ -65,7 +65,10 @@ def create_svc(svc_name, selector_label, _port, _node_port):
     spec = client.V1ServiceSpec()
     spec.selector = {"app": selector_label}
     spec.type = "NodePort"
-    spec.ports = [client.V1ServicePort(protocol="TCP", port=_port, target_port=_node_port)]
+    spec.ports = [client.V1ServicePort(
+        protocol="TCP", 
+        port=_port, 
+        target_port=_node_port)]
 
     service.spec = spec
 
@@ -98,7 +101,7 @@ def main():
             # create service here
             svc_name = 'worker' + str(count) + '-service'
             selector_label = pod_label
-            _port = 2341
+            _port = 2343
             node_port += 1
             create_svc(svc_name, selector_label, _port, node_port)
             print('Create new service: ' + svc_name)
@@ -118,7 +121,7 @@ def main():
             os.system(drop_svc)
             print('Delete service: ' + svc_name)
             node_port -= 1
-            
+
         else:
             print('Current max number is ' + msg)
         socket.send_string('Ack')
