@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import os, json
+import os
 
 config_file = '/etc/haproxy/haproxy.cfg'
 
@@ -19,6 +19,11 @@ def write_back(records):
         for line in records:
             wobj.write(line)
     print('HAproxy configuration file has been changed.')
+
+
+def hot_reload():
+    sf_reload = 'haproxy -f /etc/haproxy/haproxy.cfg -p /var/run/haproxy.pid -sf $(cat /var/run/haproxy.pid)'
+    os.system(sf_reload)
 
 
 def add_server(backend, host_name, address, port):
@@ -43,7 +48,7 @@ def add_server(backend, host_name, address, port):
     write_back(records)
 
     # hot reload haproxy
-
+    hot_reload()
 
 def delete_server(backend, server):
     records = []
@@ -60,9 +65,4 @@ def delete_server(backend, server):
         write_back(records)
     
     # hot reload haproxy
-
-
-def hot_reload():
-    pass
-
-
+    hot_reload()
