@@ -1,0 +1,4 @@
+Node, Address, Port, Status, Deployment
+node1, 129.59.107.141, 30000, Free, None
+node2, 129.59.107.144, 30000, Free, None
+node3, 129.59.107.133, 30000, Free, None

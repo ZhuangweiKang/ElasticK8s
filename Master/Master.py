@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import csv
 import yaml
 import zmq
 import time
@@ -9,8 +10,29 @@ from kubernetes import client, config
 
 image_name = 'zhuangweikang/streamingml_worker'
 container_port = 2341
+csv_file = './NodeInfo.csv'
 
-def create_deployment(deployment_name, pod_label, container_name):
+
+def read_csv():
+    global csv_file
+    with open(csv_file) as f:
+        f_csv = csv.DictReader(f)
+        return f_csv
+
+
+def write_csv(rows):
+    global csv_file
+    headers = ['Node', 'Address', 'Port', 'Status']
+    with open(csv_file, 'w') as f:
+        f_csv = csv.DictWriter(f, headers)
+        f_csv.writeheader()
+        f_csv.writerows(rows)
+
+# create a deployment on a specific node
+def create_deployment(node_name, deployment_name, pod_label, container_name):
+    global image_name
+    global container_port
+
     # Load config from default location
     config.load_kube_config()
     extension = client.ExtensionsV1beta1Api()
@@ -26,7 +48,7 @@ def create_deployment(deployment_name, pod_label, container_name):
     # Create and configurate a spec section
     template = client.V1PodTemplateSpec(
         metadata=client.V1ObjectMeta(labels={"app": pod_label}),
-        spec=client.V1PodSpec(containers=[container]))
+        spec=client.V1PodSpec(node_name=node_name ,containers=[container]))
 
     selector = client.V1LabelSelector(match_labels={'app': pod_label})
 
@@ -83,6 +105,59 @@ def build_socket():
     return socket
 
 
+def scale_in(count, node_port):
+     # create deployment here
+    deployment_name = 'worker' + str(count) + '-deployment'
+    pod_label = 'worker' + str(count)
+    container_name = 'worker' + str(count)
+
+    # CSV operations
+    rows = read_csv()
+    _rows = [row for row in rows]
+    for i, row in enumerate(_rows):
+        if row['Status'] == 'Free':
+            target_row = row
+            _rows[i]['Status'] = 'Running'
+            _rows[i]['Deployment'] = deployment_name
+    write_csv(_rows)
+
+    node_name = target_row['Node']
+    create_deployment(node_name, deployment_name, pod_label, container_name)
+    print('Create new deployment: '+ deployment_name)
+
+    # create service here
+    svc_name = 'worker' + str(count) + '-service'
+    selector_label = pod_label
+    _port = 2343
+    create_svc(svc_name, selector_label, _port, node_port)
+    print('Create new service: ' + svc_name)
+
+
+def scale_out(count):
+    # delete deployment
+    deployment_name = 'worker' + str(count) + '-deployment'
+    drop_deployment = 'kubectl delete deployment ' + deployment_name
+    os.system(drop_deployment)
+
+    # CSV operations
+    rows = read_csv()
+    _rows = [row for row in rows]
+    for i, row in enumerate(_rows[:]):
+        if row['Deployment'] == deployment_name:
+            _rows[i]['Status'] = 'Free'
+            _rows[i]['Deployment'] = 'None'
+    write_csv(_rows)
+    
+    print('Delete deployment: ' + deployment_name)
+    time.sleep(5)
+
+    # delete service
+    svc_name = 'worker' + str(count) + '-service'
+    drop_svc = 'kubectl delete svc ' + svc_name
+    os.system(drop_svc)
+    print('Delete service: ' + svc_name)
+
+
 def main():
     socket = build_socket()
     count = 0
@@ -91,37 +166,10 @@ def main():
         msg = socket.recv_string()
         if msg == 'scale-in':
             count += 1
-            # create deployment here
-            deployment_name = 'worker' + str(count) + '-deployment'
-            pod_label = 'worker' + str(count)
-            container_name = 'worker' + str(count)
-            create_deployment(deployment_name, pod_label, container_name)
-            print('Create new deployment: '+ deployment_name)
-
-            # create service here
-            svc_name = 'worker' + str(count) + '-service'
-            selector_label = pod_label
-            _port = 2343
-            node_port += 1
-            create_svc(svc_name, selector_label, _port, node_port)
-            print('Create new service: ' + svc_name)
-
+            scale_in(count, node_port)
         elif msg == 'scale-out':
-            # delete deployment
-            deployment_name = 'worker' + str(count) + '-deployment'
-            drop_deployment = 'kubectl delete deployment ' + deployment_name
-            os.system(drop_deployment)
-            print('Delete deployment: ' + deployment_name)
-            time.sleep(10)
+            scale_out(count)
             count -= 1
-
-            # delete service
-            svc_name = 'worker' + str(count) + '-service'
-            drop_svc = 'kubectl delete svc ' + svc_name
-            os.system(drop_svc)
-            print('Delete service: ' + svc_name)
-            node_port -= 1
-
         else:
             print('Current max number is ' + msg)
         socket.send_string('Ack')
