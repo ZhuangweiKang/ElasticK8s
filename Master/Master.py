@@ -11,6 +11,7 @@ from kubernetes import client, config
 image_name = 'zhuangweikang/streamingml_worker'
 container_port = 2341
 csv_file = './NodeInfo.csv'
+backend_name = None
 
 
 def read_csv():
@@ -98,14 +99,24 @@ def create_svc(svc_name, selector_label, _port, _node_port):
     api_instance.create_namespaced_service(namespace="default", body=service)
 
 
-def build_socket():
+# Build a socket to recv msg from Mangager
+def build_REP_socket():
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.bind('tcp://*:2342')
     return socket
 
 
-def scale_in(count, node_port):
+# Build a socket to send msg to HAproxy
+def build_REQ_socket(address, port):
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect('tcp://' + address + ':' + port)  
+    return socket
+
+
+# Add new deploymeny into the K8s cluster
+def scale_in(socket, count, node_port):
      # create deployment here
     deployment_name = 'worker' + str(count) + '-deployment'
     pod_label = 'worker' + str(count)
@@ -132,8 +143,12 @@ def scale_in(count, node_port):
     create_svc(svc_name, selector_label, _port, node_port)
     print('Create new service: ' + svc_name)
 
+    # notify haproxy to update configuration file
+    notify_haproxy(socket, 'scale-in', backend_name, node_name, target_row['Address'], target_row['Port'])
 
-def scale_out(count):
+
+# Delete the last added deployment
+def scale_out(socket, count):
     # delete deployment
     deployment_name = 'worker' + str(count) + '-deployment'
     drop_deployment = 'kubectl delete deployment ' + deployment_name
@@ -144,6 +159,7 @@ def scale_out(count):
     _rows = [row for row in rows]
     for i, row in enumerate(_rows[:]):
         if row['Deployment'] == deployment_name:
+            target_row = row
             _rows[i]['Status'] = 'Free'
             _rows[i]['Deployment'] = 'None'
     write_csv(_rows)
@@ -157,22 +173,31 @@ def scale_out(count):
     os.system(drop_svc)
     print('Delete service: ' + svc_name)
 
+    # notify haproxy to update configuration file
+    notify_haproxy(socket, 'scale-out', backend_name, target_row['Node'], target_row['Address'], target_row['Port'])
 
-def main():
-    socket = build_socket()
+# Notify HAproxy to update
+def notify_haproxy(socket, option, backend, host_name, address, port):
+    msg = {'option': option, 'backend': backend, 'host_name': host_name, 'address': address, 'port': port}
+    socket.send_json(msg)
+    _recv = socket.recv_string()
+    print('Recv Ack msg from HAproxy server: %s' % _recv)
+
+
+def main(haproxy_address, haproxy_port):
+    rep_socket = build_REP_socket()
+    req_socket = build_REQ_socket(haproxy_address, haproxy_port)
     count = 0
     node_port = 30000
     while True:
-        msg = socket.recv_string()
+        msg = rep_socket.recv_string()
         if msg == 'scale-in':
             count += 1
-            scale_in(count, node_port)
+            scale_in(req_socket, count, node_port)
         elif msg == 'scale-out':
-            scale_out(count)
+            scale_out(req_socket, count)
             count -= 1
         else:
             print('Current max number is ' + msg)
-        socket.send_string('Ack')
+        rep_socket.send_string('Ack')
 
-
-main()

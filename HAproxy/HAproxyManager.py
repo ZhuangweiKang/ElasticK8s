@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import zmq
 
 config_file = '/etc/haproxy/haproxy.cfg'
 
@@ -12,6 +13,7 @@ def fetch():
         for line in robj:
             records.append(line)
     return records
+
 
 def write_back(records):
     # Write new configuration info back
@@ -50,14 +52,15 @@ def add_server(backend, host_name, address, port):
     # hot reload haproxy
     hot_reload()
 
-def delete_server(backend, server):
+
+def delete_server(backend, host_name):
     records = []
     records = fetch()
     hasBackend = False
     for i, line in enumerate(records[:]):
         if line.strip().startswith('backend ' + backend):
             hasBackend = True
-        if line.strip().startswith('server ' + server):
+        if line.strip().startswith('server ' + host_name):
             del records[i]
     if hasBackend is False:
         print('Specified backend is unavailable.')
@@ -66,3 +69,26 @@ def delete_server(backend, server):
     
     # hot reload haproxy
     hot_reload()
+
+
+def build_socket(port):
+    context = zmq.Context()
+    socket = context.socket(zmq.REP)
+    socket.bind('tcp://*:' + port)
+    return socket
+
+
+def listen_update(port):
+    socket = build_socket(port)
+    while True:
+        msg = socket.recv_json()
+        socket.send_string('Ack')
+        option = msg['option']
+        backend = msg['backend']
+        host_name = msg['host_name']
+        address = msg['address']
+        port = msg['port']
+        if option == 'scale-in':
+            add_server(backend, host_name, address, port)
+        elif option == 'scale-out':
+            delete_server(backend, host_name)
