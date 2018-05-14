@@ -85,5 +85,9 @@ class K8sOperations:
         os.system(drop_svc)
         print('Delete service: ' + svc_name)
 
-    def update_cpu_num(self, cpu_requests, cpu_limits=None):
-        pass
+    def update_cpu_num(self, deployment_name, cpu_requests, cpu_limits=None):
+        if cpu_limits is None:
+            command = 'kubectl set resources deployment %s --requests=\'cpu=%s\'' % (deployment_name, cpu_requests)
+        else:
+            command = 'kubectl set resources deployment %s --requests=\'cpu=%s\' --limits=\'cpu=%s\'' % (deployment_name, cpu_requests, cpu_limits)
+        os.system(command)
