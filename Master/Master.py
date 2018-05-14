@@ -42,7 +42,7 @@ class ZMQ_Operations:
 
 
 class ElasticK8s:
-    def __init__(self, port1, haproxy_address, port2):
+    def __init__(self, port1, haproxy_address, port2, haproxy_backend):
         # port1: used to listen message from manager
         # port2: used to connect to haproxy server 
         self.csv_op = CSV_Operations()
@@ -53,11 +53,11 @@ class ElasticK8s:
         self.csv_file = './NodeInfo.csv'
         self.image_name = 'zhuangweikang/streamingml_worker'
         self.container_port = 2341
-        self.backend_name = None
+        self.backend_name = haproxy_backend
 
 
     # Add new deploymeny into the K8s cluster
-    def scale_in(self, count, node_port):
+    def scale_in(self, count, node_port, cpu_requests, cpu_limits):
         # create deployment here
         deployment_name = 'worker' + str(count) + '-deployment'
         pod_label = 'worker' + str(count)
@@ -74,7 +74,7 @@ class ElasticK8s:
         self.csv_op.write_csv(_rows, self.csv_file)
 
         node_name = target_row['Node']
-        self.k8s_op.create_deployment(node_name, deployment_name, pod_label, self.image_name, container_name)
+        self.k8s_op.create_deployment(node_name, deployment_name, pod_label, self.image_name, container_name, cpu_requests, cpu_limits)
         print('Create new deployment: '+ deployment_name)
 
         # create service here
@@ -89,11 +89,10 @@ class ElasticK8s:
 
 
     # Delete the last added deployment
-    def scale_out(self, socket, count):
+    def scale_out(self, count):
         # delete deployment
         deployment_name = 'worker' + str(count) + '-deployment'
-        drop_deployment = 'kubectl delete deployment ' + deployment_name
-        os.system(drop_deployment)
+        self.k8s_op.delete_deployment(deployment_name)
 
         # CSV operations
         rows = self.csv_op.read_csv(self.csv_file)
@@ -104,13 +103,10 @@ class ElasticK8s:
                 _rows[i]['Status'] = 'Free'
                 _rows[i]['Deployment'] = 'None'
         self.csv_op.write_csv(_rows, self.csv_file)
-        print('Delete deployment: ' + deployment_name)
 
         # delete service
         svc_name = 'worker' + str(count) + '-service'
-        drop_svc = 'kubectl delete svc ' + svc_name
-        os.system(drop_svc)
-        print('Delete service: ' + svc_name)
+        self.k8s_op.delete_svc(svc_name)
 
         # notify haproxy to update configuration file
         self.notify_haproxy('scale-out', self.backend_name, target_row['Node'], target_row['Address'], target_row['Port'])

@@ -1,21 +1,26 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-
+import os
 from kubernetes import client, config
 
 
 class K8sOperations:
     # Create a deployment on a specific node
-    def create_deployment(self, node_name, deployment_name, pod_label, image_name, container_name, container_port=2341):
+    def create_deployment(self, node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=2341):
         # Load config from default location
         config.load_kube_config()
         extension = client.ExtensionsV1beta1Api()
+
+        container_resource = client.V1ResourceRequirements(
+            limits={'cpu': cpu_limits}, 
+            requests={'cpu': cpu_requests})
 
         container = client.V1Container(
             name=container_name,
             image=image_name,
             ports=[client.V1ContainerPort(container_port=container_port)],
+            resources= container_resource,
             tty=True,
             stdin=True,
             command=['bin/bash'])
@@ -29,7 +34,7 @@ class K8sOperations:
 
         # Create the specification of deployment
         spec = client.ExtensionsV1beta1DeploymentSpec(
-            replicas=2,
+            replicas=1,
             selector=selector,
             template=template
         )
@@ -69,3 +74,16 @@ class K8sOperations:
 
         # create service
         api_instance.create_namespaced_service(namespace="default", body=service)
+
+    def delete_deployment(self, deployment_name):
+        drop_deployment = 'kubectl delete deployment ' + deployment_name
+        os.system(drop_deployment)
+        print('Delete deployment %s' % deployment_name)
+
+    def delete_svc(self, svc_name):
+        drop_svc = 'kubectl delete svc ' + svc_name
+        os.system(drop_svc)
+        print('Delete service: ' + svc_name)
+
+    def update_cpu_num(self, cpu_requests, cpu_limits=None):
+        pass
