@@ -19,11 +19,11 @@ class K8sOperations:
         container = client.V1Container(
             name=container_name,
             image=image_name,
+            image_pull_policy='IfNotPresent',
             ports=[client.V1ContainerPort(container_port=container_port)],
             resources= container_resource,
             tty=True,
-            stdin=True,
-            command=['bin/bash'])
+            stdin=True)
 
         # Create and configurate a spec section
         template = client.V1PodTemplateSpec(

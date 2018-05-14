@@ -6,6 +6,7 @@ import csv
 import yaml
 import zmq
 import time
+import simplejson
 from K8sOperations import K8sOperations
 
 
@@ -52,7 +53,7 @@ class ElasticK8s:
         self.req_socket = self.zmq_op.build_REQ_socket(haproxy_address, port2)
         self.csv_file = './NodeInfo.csv'
         self.image_name = 'zhuangweikang/streamingml_worker'
-        self.container_port = 2341
+        self.container_port = 7000
         self.backend_name = haproxy_backend
 
 
@@ -80,7 +81,7 @@ class ElasticK8s:
         # create service here
         svc_name = 'worker' + str(count) + '-service'
         selector_label = pod_label
-        _port = 2343
+        _port = 7000
         self.k8s_op.create_svc(svc_name, selector_label, _port, node_port)
         print('Create new service: ' + svc_name)
 
