@@ -44,7 +44,11 @@ def measureContainerPrepareTime(pod_label):
 
 def timeMeasurementExperiment():
     images = ['docgroupvandy/xceptionkeras', 'docgroupvandy/k8s-demo', 'docgroupvandy/vgg16keras', 'docgroupvandy/vgg19keras', 'docgroupvandy/resnet50keras', 'docgroupvandy/inceptionv3keras', 'docgroupvandy/inceptionresnetv2keras', 'docgroupvandy/mobilenetkeras', 'docgroupvandy/densenet121keras', 'docgroupvandy/densenet169keras', 'docgroupvandy/densenet201keras', 'docgroupvandy/word2vec_google', 'docgroupvandy/speech-to-text-wavenet', 'docgroupvandy/word2vec_glove']
-    
+    def clear_deploy():
+        command = 'kubectl delete deploy --all'
+        _exec = os.popen(command)
+        print(_exec.read())
+        
     # create one deployment in each node
     k8sop = K8sOp()
     for j in range(len(images)):
@@ -77,10 +81,5 @@ def timeMeasurementExperiment():
             f_csv = csv.DictWriter(f, headers)
             f_csv.writeheader()
             f_csv.writerow(row)
-
-    def clear_deploy():
-        command = 'kubectl delete deploy --all'
-        _exec = os.popen(command)
-        print(_exec.read())
 
 timeMeasurementExperiment()
