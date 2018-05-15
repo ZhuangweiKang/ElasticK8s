@@ -72,10 +72,10 @@ def timeMeasurementExperiment():
     k8sop = K8sOp()
     worker_socket = connect_worker()
     clear_deploy()
+    time.sleep(3)
     for j in range(len(images)):
         print('Image: %s\n' % images[j])
         total_time = [images[j]]
-        time.sleep(3)
         for k in range(10):
             print('Test-%d' % (k+1))
             node_name = 'kang4'
@@ -97,7 +97,7 @@ def timeMeasurementExperiment():
                 if len(items['items']) == 0:
                     break
             
-            # notify node to delete image
+            # notify node to delete image and wait until container is removed
             worker_socket.send_string('delete:' + images[j])
             worker_socket.recv_string()
 
