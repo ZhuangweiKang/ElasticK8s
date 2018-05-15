@@ -72,10 +72,10 @@ def timeMeasurementExperiment():
     k8sop = K8sOp()
     worker_socket = connect_worker()
     clear_deploy()
-    time.sleep(5)
     for j in range(len(images)):
         print('Image: %s\n' % images[j])
         total_time = [images[j]]
+        time.sleep(3)
         for k in range(10):
             print('Test-%d' % (k+1))
             node_name = 'kang4'
@@ -86,6 +86,7 @@ def timeMeasurementExperiment():
             cpu_requests = '0.5'
             cpu_limits = '1.0'
             k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
+            time.sleep(1)
             total_time.append(measureContainerPrepareTime(pod_label))
             clear_deploy()
             print('Waiting for pod to be deleted.')
@@ -99,7 +100,7 @@ def timeMeasurementExperiment():
             # notify node to delete image
             worker_socket.send_string('delete:' + images[j])
             worker_socket.recv_string()
-            
+
         total_time.append(sum(total_time[1:])/10)
         for m, item in enumerate(total_time[:]):
             if m != 0:
