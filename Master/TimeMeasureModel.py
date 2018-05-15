@@ -49,8 +49,6 @@ def timeMeasurementExperiment():
         _exec = os.popen(command)
         print(_exec.read())
 
-    def delete_image(image_name):
-        
     def write_csv(row, csv_file='./ContainerPrepareTimeReport.csv'):
         headers = ['Image', 'Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6', 'Test7', 'Test8', 'Test9', 'Test10', 'Average']
         with open(csv_file, 'a') as f:
