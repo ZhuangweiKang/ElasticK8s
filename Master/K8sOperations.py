@@ -7,7 +7,7 @@ from kubernetes import client, config
 
 class K8sOperations:
     # Create a deployment on a specific node
-    def create_deployment(self, node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=2341):
+    def create_deployment(self, node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000):
         # Load config from default location
         config.load_kube_config()
         extension = client.ExtensionsV1beta1Api()

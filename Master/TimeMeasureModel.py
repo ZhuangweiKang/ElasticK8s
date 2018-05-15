@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import os
+import csv
 import simplejson
+from K8sOperations import K8sOperations as K8sOp
 
 # Measure the time required to downloading image and make the container ready
 # total_time = creating_deployment + schedual_deployment + downloading_image + create_container
-def measureContainerPrepareTime(self, pod_label):
+def measureContainerPrepareTime(pod_label):
     ready_flag = init_flag = False
     while (ready_flag and init_flag) is False:
         command = 'kubectl get pods -l app=%s -o json' % pod_label
@@ -38,3 +40,47 @@ def measureContainerPrepareTime(self, pod_label):
 
     print('Total time of making container ready is %ds' % duration)
     return duration 
+
+
+def timeMeasurementExperiment():
+    images = ['docgroupvandy/xceptionkeras', 'docgroupvandy/k8s-demo', 'docgroupvandy/vgg16keras', 'docgroupvandy/vgg19keras', 'docgroupvandy/resnet50keras', 'docgroupvandy/inceptionv3keras', 'docgroupvandy/inceptionresnetv2keras', 'docgroupvandy/mobilenetkeras', 'docgroupvandy/densenet121keras', 'docgroupvandy/densenet169keras', 'docgroupvandy/densenet201keras', 'docgroupvandy/word2vec_google', 'docgroupvandy/speech-to-text-wavenet', 'docgroupvandy/word2vec_glove']
+    
+    # create one deployment in each node
+    k8sop = K8sOp()
+    for j in range(len(images)):
+        print('Image: %s' % images[j])
+        total_time = [images[j]]
+        for k in range(10):
+            print('Test-%d' % (k+1))
+            node_name = 'kang4'
+            deployment_name = 'kang4-deployment'
+            pod_label = 'worker4'
+            image_name = images[j]
+            container_name = pod_label
+            cpu_requests = '0.5'
+            cpu_limits = '1.0'
+            k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
+            total_time.append(measureContainerPrepareTime(pod_label))
+            clear_deploy()
+        total_time.append(sum(total_time[1:])/10)
+        for m, item in enumerate(total_time[:]):
+            if m != 0:
+                total_time[m] = str(item) + 's'
+            else:
+                total_time[m] = str(item)
+        write_csv(total_time)
+        total_time.clear()
+
+    def write_csv(row, csv_file='./ContainerPrepareTimeReport.csv'):
+        headers = ['Image', 'Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6', 'Test7', 'Test8', 'Test9', 'Test10', 'Average']
+        with open(csv_file, 'a') as f:
+            f_csv = csv.DictWriter(f, headers)
+            f_csv.writeheader()
+            f_csv.writerow(row)
+
+    def clear_deploy():
+        command = 'kubectl delete deploy --all'
+        _exec = os.popen(command)
+        print(_exec.read())
+
+timeMeasurementExperiment()
