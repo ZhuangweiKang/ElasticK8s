@@ -54,12 +54,15 @@ def timeMeasurementExperiment():
         with open(csv_file, 'a') as f:
             f_csv = csv.DictWriter(f, headers)
             f_csv.writeheader()
-            f_csv.writerow(row)
+            data = {}
+            for i in range(len(row)):
+                data.update({headers[i]:row[i]})
+            f_csv.writerow(data)
 
     # create one deployment in each node
     k8sop = K8sOp()
     for j in range(len(images)):
-        print('Image: %s' % images[j])
+        print('Image: %s\n' % images[j])
         total_time = [images[j]]
         for k in range(10):
             print('Test-%d' % (k+1))
