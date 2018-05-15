@@ -48,7 +48,16 @@ def timeMeasurementExperiment():
         command = 'kubectl delete deploy --all'
         _exec = os.popen(command)
         print(_exec.read())
+
+    def delete_image(image_name):
         
+    def write_csv(row, csv_file='./ContainerPrepareTimeReport.csv'):
+        headers = ['Image', 'Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6', 'Test7', 'Test8', 'Test9', 'Test10', 'Average']
+        with open(csv_file, 'a') as f:
+            f_csv = csv.DictWriter(f, headers)
+            f_csv.writeheader()
+            f_csv.writerow(row)
+
     # create one deployment in each node
     k8sop = K8sOp()
     for j in range(len(images)):
@@ -74,12 +83,5 @@ def timeMeasurementExperiment():
                 total_time[m] = str(item)
         write_csv(total_time)
         total_time.clear()
-
-    def write_csv(row, csv_file='./ContainerPrepareTimeReport.csv'):
-        headers = ['Image', 'Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6', 'Test7', 'Test8', 'Test9', 'Test10', 'Average']
-        with open(csv_file, 'a') as f:
-            f_csv = csv.DictWriter(f, headers)
-            f_csv.writeheader()
-            f_csv.writerow(row)
 
 timeMeasurementExperiment()

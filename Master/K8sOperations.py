@@ -19,7 +19,7 @@ class K8sOperations:
         container = client.V1Container(
             name=container_name,
             image=image_name,
-            image_pull_policy='IfNotPresent',
+            image_pull_policy='Always',
             ports=[client.V1ContainerPort(container_port=container_port)],
             resources= container_resource,
             tty=True,
