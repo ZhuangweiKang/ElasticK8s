@@ -53,7 +53,6 @@ def timeMeasurementExperiment():
         headers = ['Image', 'Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6', 'Test7', 'Test8', 'Test9', 'Test10', 'Average']
         with open(csv_file, 'a') as f:
             f_csv = csv.DictWriter(f, headers)
-            f_csv.writeheader()
             data = {}
             for i in range(len(row)):
                 data.update({headers[i]:row[i]})
@@ -76,6 +75,13 @@ def timeMeasurementExperiment():
             k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
             total_time.append(measureContainerPrepareTime(pod_label))
             clear_deploy()
+            print('Waiting for pod to be deleted.')
+            while True:
+                check_pod = 'kubectl get pods -o json'
+                _exec_ = os.popen(check_pod)
+                items = simplejson.loads(_exec_.read())
+                if len(items['items']) == 0:
+                    break
         total_time.append(sum(total_time[1:])/10)
         for m, item in enumerate(total_time[:]):
             if m != 0:
