@@ -99,8 +99,7 @@ def timeMeasurementExperiment():
             # notify node to delete image
             worker_socket.send_string('delete:' + images[j])
             worker_socket.recv_string()
-
-            time.sleep(5)
+            
         total_time.append(sum(total_time[1:])/10)
         for m, item in enumerate(total_time[:]):
             if m != 0:
