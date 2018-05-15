@@ -72,6 +72,7 @@ def timeMeasurementExperiment():
     k8sop = K8sOp()
     worker_socket = connect_worker()
     clear_deploy()
+    time.sleep(5)
     for j in range(len(images)):
         print('Image: %s\n' % images[j])
         total_time = [images[j]]
