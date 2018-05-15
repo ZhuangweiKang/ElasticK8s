@@ -60,7 +60,7 @@ def timeMeasurementExperiment():
             f_csv.writerow(data)
     
 
-    def connect_worker(address='129.59.107.141:2555'):
+    def connect_worker(address='tcp://129.59.107.141:2555'):
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
         socket.connect(address)
@@ -96,7 +96,7 @@ def timeMeasurementExperiment():
             # notify node to delete image
             worker_socket.send_string('delete:' + images[j])
             worker_socket.recv_string()
-            
+
         total_time.append(sum(total_time[1:])/10)
         for m, item in enumerate(total_time[:]):
             if m != 0:
