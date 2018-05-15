@@ -5,6 +5,7 @@ import os
 import csv
 import simplejson
 import zmq
+import time
 from K8sOperations import K8sOperations as K8sOp
 
 # Measure the time required to downloading image and make the container ready
@@ -97,6 +98,7 @@ def timeMeasurementExperiment():
             worker_socket.send_string('delete:' + images[j])
             worker_socket.recv_string()
 
+            time.sleep(5)
         total_time.append(sum(total_time[1:])/10)
         for m, item in enumerate(total_time[:]):
             if m != 0:
