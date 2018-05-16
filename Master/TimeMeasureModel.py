@@ -107,7 +107,7 @@ def timeMeasurementExperiment(hasImage):
             print('Create service here...')
             
             url = 'http://129.59.107.141:30000/predict'
-            params = [{'image': './owl.jpg'}]
+            params = [{'image': '@owl.jpg'}]
             post_data_dic ={"method":"CommonQueryService", "params":params}
             crl = pycurl.Curl()
             crl.setopt(pycurl.MAXREDIRS, 5)  
