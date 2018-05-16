@@ -48,14 +48,14 @@ def measureContainerPrepareTime(pod_label):
     return duration
 
 
-def timeMeasurementExperiment():
+def timeMeasurementExperiment(hasImage):
     images = ['docgroupvandy/xceptionkeras', 'docgroupvandy/k8s-demo', 'docgroupvandy/vgg16keras', 'docgroupvandy/vgg19keras', 'docgroupvandy/resnet50keras', 'docgroupvandy/inceptionv3keras', 'docgroupvandy/inceptionresnetv2keras', 'docgroupvandy/mobilenetkeras', 'docgroupvandy/densenet121keras', 'docgroupvandy/densenet169keras', 'docgroupvandy/densenet201keras', 'docgroupvandy/word2vec_google', 'docgroupvandy/speech-to-text-wavenet', 'docgroupvandy/word2vec_glove']
     def clear_deploy():
         command = 'kubectl delete deploy --all'
         _exec = os.popen(command)
         print(_exec.read())
 
-    def write_csv(row, csv_file='./ContainerPrepareTimeReport(image-available).csv'):
+    def write_csv(row, csv_file='./ContainerPrepareTimeReport.csv'):
         headers = ['Image', 'Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6', 'Test7', 'Test8', 'Test9', 'Test10', 'Average']
         with open(csv_file, 'a') as f:
             f_csv = csv.DictWriter(f, headers)
@@ -74,7 +74,8 @@ def timeMeasurementExperiment():
 
     # create one deployment in each node
     k8sop = K8sOp()
-    # worker_socket = connect_worker()
+    if hasImage is False:
+        worker_socket = connect_worker()
     clear_deploy()
     time.sleep(3)
     for j in range(len(images)):
@@ -108,11 +109,10 @@ def timeMeasurementExperiment():
                 if len(items['items']) == 0:
                     break
 
-            '''
             # notify node to delete image and wait until container is removed
-            worker_socket.send_string('delete:' + images[j])
-            worker_socket.recv_string()
-            '''
+            if hasImage is False:
+                worker_socket.send_string('delete:' + images[j])
+                worker_socket.recv_string()
 
         total_time.append(sum(total_time[1:])/10)
         for m, item in enumerate(total_time[:]):
@@ -120,7 +120,12 @@ def timeMeasurementExperiment():
                 total_time[m] = str(item) + 's'
             else:
                 total_time[m] = str(item)
-        write_csv(total_time)
+        if hasImage is False:
+            write_csv(total_time)
+        else:
+            write_csv(total_time, 'ContainerPrepareTimeReport(image-available).csv')
         total_time.clear()
 
-timeMeasurementExperiment()
+
+timeMeasurementExperiment(False)
+timeMeasurementExperiment(True)
