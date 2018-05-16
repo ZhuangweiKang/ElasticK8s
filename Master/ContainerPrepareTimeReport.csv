@@ -1,11 +1,1 @@
 Image, Test1, Test2, Test3, Test4, Test5, Test6, Test7, Test8, Test9, Test10, Average
-docgroupvandy/xceptionkeras,36s,47s,37s,38s,42s,44s,37s,37s,36s,40s,39.4s
-docgroupvandy/k8s-demo,56s,49s,52s,46s,47s,49s,52s,47s,49s,48s,49.5s
-docgroupvandy/vgg16keras,43s,42s,43s,41s,38s,44s,37s,42s,38s,43s,41.1s
-docgroupvandy/vgg19keras,51s,40s,39s,46s,45s,38s,45s,46s,39s,45s,43.4s
-docgroupvandy/resnet50keras,41s,45s,39s,43s,45s,37s,43s,39s,44s,44s,42.0s
-docgroupvandy/inceptionv3keras,37s,38s,41s,48s,38s,43s,47s,42s,37s,45s,41.6s
-docgroupvandy/inceptionresnetv2keras,39s,-86363s,41s,44s,37s,38s,38s,37s,37s,43s,-8600.9s
-docgroupvandy/mobilenetkeras,46s,49s,40s,38s,43s,40s,37s,40s,46s,43s,42.2s
-docgroupvandy/densenet121keras,47s,37s,37s,36s,36s,40s,38s,50s,37s,37s,39.5s
-docgroupvandy/densenet169keras,44s,37s,45s,43s,37s,43s,36s,45s,50s,37s,41.7s
