@@ -107,17 +107,12 @@ def timeMeasurementExperiment(hasImage):
             print('Create service here...')
             
             url = 'http://129.59.107.141:30000/predict'
-            params = [{'image': '@owl.jpg'}]
-            post_data_dic ={"method":"CommonQueryService", "params":params}
             crl = pycurl.Curl()
-            crl.setopt(pycurl.MAXREDIRS, 5)  
-            crl.setopt(pycurl.VERBOSE,1)
-            crl.setopt(pycurl.FOLLOWLOCATION, 1)
-            crl.fp = StringIO()
-            crl.setopt(crl.POSTFIELDS, json.dumps(post_data_dic, ensure_ascii=False))
+            crl.setopt(crl.POST, 1)
             crl.setopt(pycurl.URL, url)
+            crl.setopt(crl.HTTPPOST, [("images_file", (crl.FORM_FILE, "owl.jpg"))])
             crl.setopt(crl.WRITEFUNCTION, crl.fp.write)
-            
+            crl.setopt(pycurl.HTTPHEADER, ['Accept-Language: en'])
             print('Waiting for container to load model...')
 
             while True:
