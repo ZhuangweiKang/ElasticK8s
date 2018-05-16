@@ -117,14 +117,17 @@ def timeMeasurementExperiment(hasImage):
             crl.setopt(crl.POSTFIELDS, json.dumps(post_data_dic, ensure_ascii=False))
             crl.setopt(pycurl.URL, url)
             crl.setopt(crl.WRITEFUNCTION, crl.fp.write)
+            
+            print('Waiting for container to load model...')
+
             while True:
                 try:
                     crl.perform()
-                    print(crl.fp.getvalue())
                     break
                 except Exception:
                     continue
 
+            print(crl.fp.getvalue())
             '''
             while True:
                 try:
