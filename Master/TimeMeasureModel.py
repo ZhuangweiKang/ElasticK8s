@@ -113,7 +113,7 @@ def timeMeasurementExperiment(hasImage):
             crl.setopt(pycurl.MAXREDIRS, 5)  
             crl.setopt(pycurl.VERBOSE,1)
             crl.setopt(pycurl.FOLLOWLOCATION, 1)
-            crl.fp = StringIO.StringIO()
+            crl.fp = StringIO()
             crl.setopt(crl.POSTFIELDS, json.dumps(post_data_dic, ensure_ascii=False))
             crl.setopt(pycurl.URL, url)
             crl.setopt(crl.WRITEFUNCTION, crl.fp.write)
