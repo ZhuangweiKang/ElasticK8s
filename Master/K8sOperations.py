@@ -68,7 +68,7 @@ class K8sOperations:
         spec.ports = [client.V1ServicePort(
             protocol="TCP", 
             port=_port, 
-            target_port=_node_port)]
+            node_port=_node_port)]
 
         service.spec = spec
 
