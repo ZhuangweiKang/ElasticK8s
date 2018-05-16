@@ -10,6 +10,7 @@ from K8sOperations import K8sOperations as K8sOp
 
 # Measure the time required to downloading image and make the container ready
 # total_time = creating_deployment + schedual_deployment + downloading_image + create_container
+'''
 def measureContainerPrepareTime(pod_label):
     ready_flag = init_flag = False
     while (ready_flag and init_flag) is False:
@@ -46,12 +47,12 @@ def measureContainerPrepareTime(pod_label):
 
     print('Total time of making container ready is %ds' % duration)
     return duration
-
+'''
 
 def timeMeasurementExperiment(hasImage):
     images = ['docgroupvandy/xceptionkeras', 'docgroupvandy/k8s-demo', 'docgroupvandy/vgg16keras', 'docgroupvandy/vgg19keras', 'docgroupvandy/resnet50keras', 'docgroupvandy/inceptionv3keras', 'docgroupvandy/inceptionresnetv2keras', 'docgroupvandy/mobilenetkeras', 'docgroupvandy/densenet121keras', 'docgroupvandy/densenet169keras', 'docgroupvandy/densenet201keras', 'docgroupvandy/word2vec_google', 'docgroupvandy/speech-to-text-wavenet', 'docgroupvandy/word2vec_glove']
-    def clear_deploy():
-        command = 'kubectl delete deploy --all'
+    def clear_deploy_service():
+        command = 'kubectl delete deploy --all && kubectl delete svc kang4-service'
         _exec = os.popen(command)
         print(_exec.read())
 
@@ -76,7 +77,7 @@ def timeMeasurementExperiment(hasImage):
     k8sop = K8sOp()
     if hasImage is False:
         worker_socket = connect_worker()
-    clear_deploy()
+    clear_deploy_service()
     time.sleep(3)
     for j in range(len(images)):
         print('Image: %s\n' % images[j])
@@ -92,7 +93,7 @@ def timeMeasurementExperiment(hasImage):
             container_name = pod_label
             cpu_requests = '0.5'
             cpu_limits = '1.0'
-            time.time()
+            start = time.time()
             k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
             print('Create deployment...')
 
@@ -117,10 +118,20 @@ def timeMeasurementExperiment(hasImage):
                     break
             
             while True:
-                command = 'time curl -X POST -F image=@owl.jpg \'http://129.59.107.141:30000/predict\''
-                
-            total_time.append(measureContainerPrepareTime(pod_label))
-            clear_deploy()
+                try:
+                    command = 'curl -X POST -F image=@owl.jpg \'http://129.59.107.141:30000/predict\' | jq \'.\''
+                    _exec = os.popen(command)
+                    result = simplejson.loads(_exec.read())
+                    break
+                except Exception:
+                    continue
+
+            end = time.time()
+            
+            duration = end - start
+            # total_time.append(measureContainerPrepareTime(pod_label))
+            total_time.append(duration)
+            clear_deploy_service()
             print('Waiting for pod to be deleted.')
             while True:
                 check_pod = 'kubectl get pods -o json'
@@ -148,4 +159,4 @@ def timeMeasurementExperiment(hasImage):
 
 
 timeMeasurementExperiment(False)
-timeMeasurementExperiment(True)
+# timeMeasurementExperiment(True)
