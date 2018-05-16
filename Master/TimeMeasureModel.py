@@ -115,8 +115,9 @@ def timeMeasurementExperiment(hasImage):
             print('Waiting for container to load model...')
 
             while True:
+                crl.perform()
                 try:
-                    crl.perform()
+                    print(crl.getinfo(pycurl.RESPONSE_CODE))
                     break
                 except Exception:
                     continue
