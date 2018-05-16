@@ -83,6 +83,8 @@ def timeMeasurementExperiment(hasImage):
         total_time = [images[j]]
         for k in range(10):
             print('Test-%d' % (k+1))
+
+            # create deployment here
             node_name = 'kang4'
             deployment_name = 'kang4-deployment'
             pod_label = 'worker4'
@@ -90,8 +92,16 @@ def timeMeasurementExperiment(hasImage):
             container_name = pod_label
             cpu_requests = '0.5'
             cpu_limits = '1.0'
+            time.time()
             k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
+            print('Create deployment...')
 
+            svc_name = 'kang4-service'
+            selector_label = 'worker4'
+            k8sop.create_svc(svc_name, selector_label)
+            print('Create service here...')
+            
+            print('Waiting deployment ready...')
             while True:
                 get_deploy = 'kubectl get deploy -o json'
                 _exec = os.popen(get_deploy)
@@ -99,6 +109,16 @@ def timeMeasurementExperiment(hasImage):
                 if len(deploy['items']) != 0:
                     break
 
+            print('Waiting service ready...')
+            while True:
+                get_svc = 'kubectl get svc kang4-service -o json'
+                _exec = os.popen(get_svc)
+                if _exec.read() != 'Error from server (NotFound): services "kang4-service" not found':
+                    break
+            
+            while True:
+                command = 'time curl -X POST -F image=@owl.jpg \'http://129.59.107.141:30000/predict\''
+                
             total_time.append(measureContainerPrepareTime(pod_label))
             clear_deploy()
             print('Waiting for pod to be deleted.')

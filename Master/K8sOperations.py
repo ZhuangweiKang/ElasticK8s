@@ -50,7 +50,7 @@ class K8sOperations:
         extension.create_namespaced_deployment(namespace="default", body=deployment)
 
     # Create a service using NodePort manner
-    def create_svc(self, svc_name, selector_label, _port=2343, _node_port=7000):
+    def create_svc(self, svc_name, selector_label, _port=7000, node_port=30000):
         config.load_kube_config()
         api_instance = client.CoreV1Api()
         service = client.V1Service()
@@ -68,7 +68,7 @@ class K8sOperations:
         spec.ports = [client.V1ServicePort(
             protocol="TCP", 
             port=_port, 
-            target_port=_node_port)]
+            node_port=_node_port)]
 
         service.spec = spec
 
