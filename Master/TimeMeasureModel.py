@@ -6,6 +6,10 @@ import csv
 import simplejson
 import zmq
 import time
+import pycurl
+import urllib
+import StringIO
+import json
 from K8sOperations import K8sOperations as K8sOp
 
 # Measure the time required to downloading image and make the container ready
@@ -102,7 +106,22 @@ def timeMeasurementExperiment(hasImage):
             k8sop.create_svc(svc_name, selector_label)
             print('Create service here...')
             
-            
+            url = 'http://129.59.107.141:30000/predict'
+            params = [{'image': '@owl.jpg'}]
+            post_data_dic ={"method":"CommonQueryService", "params":params}
+            crl = pycurl.Curl()
+            crl.setopt(pycurl.MAXREDIRS, 5)  
+            crl.setopt(pycurl.VERBOSE,1)
+            crl.setopt(pycurl.FOLLOWLOCATION, 1)
+            crl.fp = StringIO.StringIO()
+            crl.setopt(crl.POSTFIELDS, json.dumps(post_data_dic, ensure_ascii=False))
+            crl.setopt(pycurl.URL, url)
+            crl.setopt(crl.WRITEFUNCTION, crl.fp.write)
+            crl.perform()
+
+            print(crl.fp.getvalue())
+
+            '''
             while True:
                 try:
                     command = 'curl -X POST -F image=@owl.jpg \'http://129.59.107.141:30000/predict\' | jq \'.\''
@@ -111,7 +130,8 @@ def timeMeasurementExperiment(hasImage):
                     break
                 except Exception:
                     continue
-
+            '''
+            
             end = time.time()
             
             duration = end - start
