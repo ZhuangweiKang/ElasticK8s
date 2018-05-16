@@ -13,17 +13,21 @@ from K8sOperations import K8sOperations as K8sOp
 def measureContainerPrepareTime(pod_label):
     ready_flag = init_flag = False
     while (ready_flag and init_flag) is False:
-        command = 'kubectl get pods -l app=%s -o json' % pod_label
-        obj = os.popen(command)
-        obj = simplejson.loads(obj.read())
-        conditions = obj['items'][0]['status']['conditions']
-        for condition in conditions:
-            if condition['type'] == 'Initialized' and condition['status'] == 'True':
-                init_flag = True
-                initialized = {'type': 'Initialized', 'time': condition['lastTransitionTime']}
-            if condition['type'] == 'Ready' and condition['status'] == 'True':
-                ready_flag = True
-                ready = {'type': 'Ready', 'time': condition['lastTransitionTime']}
+        try:
+            command = 'kubectl get pods -l app=%s -o json' % pod_label
+            obj = os.popen(command)
+            obj = simplejson.loads(obj.read())
+            conditions = obj['items'][0]['status']['conditions']
+            for condition in conditions:
+                if condition['type'] == 'Initialized' and condition['status'] == 'True':
+                    init_flag = True
+                    initialized = {'type': 'Initialized', 'time': condition['lastTransitionTime']}
+                if condition['type'] == 'Ready' and condition['status'] == 'True':
+                    ready_flag = True
+                    ready = {'type': 'Ready', 'time': condition['lastTransitionTime']}
+        except Exception:
+            continue
+            
     print('Initialized: %s' % initialized)
     print('Ready: %s' % ready)
 
