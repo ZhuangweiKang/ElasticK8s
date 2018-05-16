@@ -127,7 +127,7 @@ def timeMeasurementExperiment(hasImage):
                 except Exception:
                     continue
 
-            print(crl.fp.getvalue())
+            # print(crl.fp.getvalue())
             '''
             while True:
                 try:
