@@ -8,7 +8,7 @@ import zmq
 import time
 import pycurl
 import urllib
-import StringIO
+from io import StringIO
 import json
 from K8sOperations import K8sOperations as K8sOp
 
@@ -131,7 +131,7 @@ def timeMeasurementExperiment(hasImage):
                 except Exception:
                     continue
             '''
-            
+
             end = time.time()
             
             duration = end - start
