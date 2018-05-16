@@ -55,7 +55,7 @@ def timeMeasurementExperiment():
         _exec = os.popen(command)
         print(_exec.read())
 
-    def write_csv(row, csv_file='./ContainerPrepareTimeReport.csv'):
+    def write_csv(row, csv_file='./ContainerPrepareTimeReport(image-available).csv'):
         headers = ['Image', 'Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6', 'Test7', 'Test8', 'Test9', 'Test10', 'Average']
         with open(csv_file, 'a') as f:
             f_csv = csv.DictWriter(f, headers)
@@ -74,7 +74,7 @@ def timeMeasurementExperiment():
 
     # create one deployment in each node
     k8sop = K8sOp()
-    worker_socket = connect_worker()
+    # worker_socket = connect_worker()
     clear_deploy()
     time.sleep(3)
     for j in range(len(images)):
@@ -108,9 +108,11 @@ def timeMeasurementExperiment():
                 if len(items['items']) == 0:
                     break
 
+            '''
             # notify node to delete image and wait until container is removed
             worker_socket.send_string('delete:' + images[j])
             worker_socket.recv_string()
+            '''
 
         total_time.append(sum(total_time[1:])/10)
         for m, item in enumerate(total_time[:]):
