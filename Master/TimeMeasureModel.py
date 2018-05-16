@@ -123,6 +123,7 @@ def timeMeasurementExperiment(hasImage):
 
             # print(crl.fp.getvalue())
             crl.close()
+            
             '''
             while True:
                 try:
