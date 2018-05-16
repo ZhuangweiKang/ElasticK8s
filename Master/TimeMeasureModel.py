@@ -117,8 +117,13 @@ def timeMeasurementExperiment(hasImage):
             crl.setopt(crl.POSTFIELDS, json.dumps(post_data_dic, ensure_ascii=False))
             crl.setopt(pycurl.URL, url)
             crl.setopt(crl.WRITEFUNCTION, crl.fp.write)
-            # crl.perform()
-            print(crl.getinfo(pycurl.HTTP_CODE))
+            while True:
+                try:
+                    crl.perform()
+                    print(crl.fp.getvalue()[0])
+                    break
+                except Exception:
+                    continue
 
             '''
             while True:
