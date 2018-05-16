@@ -102,20 +102,6 @@ def timeMeasurementExperiment(hasImage):
             k8sop.create_svc(svc_name, selector_label)
             print('Create service here...')
             
-            print('Waiting deployment ready...')
-            while True:
-                get_deploy = 'kubectl get deploy -o json'
-                _exec = os.popen(get_deploy)
-                deploy = simplejson.loads(_exec.read())
-                if len(deploy['items']) != 0:
-                    break
-
-            print('Waiting service ready...')
-            while True:
-                get_svc = 'kubectl get svc kang4-service -o json'
-                _exec = os.popen(get_svc)
-                if _exec.read() != 'Error from server (NotFound): services "kang4-service" not found':
-                    break
             
             while True:
                 try:
