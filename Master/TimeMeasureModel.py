@@ -120,7 +120,7 @@ def timeMeasurementExperiment(hasImage):
             while True:
                 try:
                     crl.perform()
-                    print(crl.fp.getvalue()[0])
+                    print(crl.fp.getvalue())
                     break
                 except Exception:
                     continue
