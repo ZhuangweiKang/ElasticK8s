@@ -1,1 +1,15 @@
 Image, Test1, Test2, Test3, Test4, Test5, Test6, Test7, Test8, Test9, Test10, Average
+docgroupvandy/xceptionkeras,3s,2s,3s,2s,2s,3s,2s,2s,2s,2s,2.3s
+docgroupvandy/k8s-demo,2s,2s,2s,2s,1s,2s,2s,2s,2s,2s,1.9s
+docgroupvandy/vgg16keras,2s,2s,2s,2s,2s,2s,2s,2s,2s,3s,2.1s
+docgroupvandy/vgg19keras,2s,2s,2s,2s,2s,2s,2s,2s,2s,2s,2.0s
+docgroupvandy/resnet50keras,2s,2s,2s,2s,2s,2s,2s,2s,2s,2s,2.0s
+docgroupvandy/inceptionv3keras,2s,2s,2s,2s,2s,2s,2s,2s,2s,2s,2.0s
+docgroupvandy/inceptionresnetv2keras,2s,2s,2s,2s,1s,2s,2s,3s,2s,2s,2.0s
+docgroupvandy/mobilenetkeras,2s,2s,3s,2s,2s,2s,2s,2s,2s,2s,2.1s
+docgroupvandy/densenet121keras,2s,2s,2s,3s,2s,2s,2s,2s,2s,2s,2.1s
+docgroupvandy/densenet169keras,2s,2s,5s,2s,2s,2s,2s,2s,2s,2s,2.3s
+docgroupvandy/densenet201keras,2s,3s,2s,2s,2s,2s,2s,2s,2s,2s,2.1s
+docgroupvandy/word2vec_google,2s,2s,2s,2s,2s,1s,2s,2s,2s,3s,2.0s
+docgroupvandy/speech-to-text-wavenet,2s,2s,2s,2s,5s,2s,2s,2s,2s,2s,2.3s
+docgroupvandy/word2vec_glove,2s,2s,2s,4s,2s,2s,2s,2s,2s,2s,2.2s
