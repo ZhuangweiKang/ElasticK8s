@@ -86,7 +86,14 @@ def timeMeasurementExperiment():
             cpu_requests = '0.5'
             cpu_limits = '1.0'
             k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
-            time.sleep(1)
+            
+            while True:
+                get_deploy = 'kubectl get deploy -o json'
+                _exec = os.popen(get_deploy)
+                deploy = simplejson.loads(_exec.read())
+                if len(deploy['items']) != 0:
+                    break
+            
             total_time.append(measureContainerPrepareTime(pod_label))
             clear_deploy()
             print('Waiting for pod to be deleted.')
