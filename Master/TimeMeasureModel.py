@@ -118,8 +118,7 @@ def timeMeasurementExperiment(hasImage):
             crl.setopt(pycurl.URL, url)
             crl.setopt(crl.WRITEFUNCTION, crl.fp.write)
             crl.perform()
-
-            print(crl.fp.getvalue())
+            print(crl.fp.getvalue()[0])
 
             '''
             while True:
