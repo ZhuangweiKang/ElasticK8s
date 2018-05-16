@@ -27,7 +27,7 @@ def measureContainerPrepareTime(pod_label):
                     ready = {'type': 'Ready', 'time': condition['lastTransitionTime']}
         except Exception:
             continue
-            
+
     print('Initialized: %s' % initialized)
     print('Ready: %s' % ready)
 
@@ -38,14 +38,14 @@ def measureContainerPrepareTime(pod_label):
         minute = int(_time[1])
         second = int(_time[2])
         return hour, minute, second
-    
+
     _inits = parse_time(initialized['time'])
     _ready = parse_time(ready['time'])
 
     duration = 3600 * (_ready[0] - _inits[0]) + 60 * (_ready[1] - _inits[1]) + (_ready[2] - _inits[2])
 
     print('Total time of making container ready is %ds' % duration)
-    return duration 
+    return duration
 
 
 def timeMeasurementExperiment():
@@ -63,14 +63,14 @@ def timeMeasurementExperiment():
             for i in range(len(row)):
                 data.update({headers[i]:row[i]})
             f_csv.writerow(data)
-    
+
 
     def connect_worker(address='tcp://129.59.107.141:2555'):
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
         socket.connect(address)
         return socket
-    
+
 
     # create one deployment in each node
     k8sop = K8sOp()
@@ -90,14 +90,14 @@ def timeMeasurementExperiment():
             cpu_requests = '0.5'
             cpu_limits = '1.0'
             k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
-            
+
             while True:
                 get_deploy = 'kubectl get deploy -o json'
                 _exec = os.popen(get_deploy)
                 deploy = simplejson.loads(_exec.read())
                 if len(deploy['items']) != 0:
                     break
-            
+
             total_time.append(measureContainerPrepareTime(pod_label))
             clear_deploy()
             print('Waiting for pod to be deleted.')
@@ -107,7 +107,7 @@ def timeMeasurementExperiment():
                 items = simplejson.loads(_exec_.read())
                 if len(items['items']) == 0:
                     break
-            
+
             # notify node to delete image and wait until container is removed
             worker_socket.send_string('delete:' + images[j])
             worker_socket.recv_string()
