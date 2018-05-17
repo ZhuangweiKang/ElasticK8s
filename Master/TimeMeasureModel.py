@@ -74,7 +74,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
 
             svc_name = node_name + '-' + str(random.randint(1, 1000)) + '-service'
             selector_label = pod_label
-            k8sop.create_svc(svc_name, selector_label, _node_port=node_port)
+            k8sop.create_svc(svc_name, selector_label,  _port=ports[j], _node_port=node_port)
             print('Create service: %s' % svc_name)
             
             print('Waiting for container to load model...')
