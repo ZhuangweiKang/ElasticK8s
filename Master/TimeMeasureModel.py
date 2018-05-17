@@ -53,8 +53,8 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
     worker_socket = connect_worker()
 
     for j in range(len(images.items())):
-        print('Image: %s\n' % images.items()[j][0])
-        total_time = [images.items()[j][0]]
+        print('Image: %s\n' % (images.items())[j][0])
+        total_time = [(images.items())[j][0]]
         for k in range(10):
             print('Test-%d' % (k+1))
 
@@ -62,12 +62,12 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             node_name = node_name
             deployment_name = node_name + '-' + str(random.randint(1, 1000)) + '-deployment'
             pod_label = node_name + '-' + str(random.randint(1, 1000)) + '-pod'
-            image_name = images.items()[j][0]
+            image_name = (images.items())[j][0]
             container_name = pod_label
             # cpu_requests = '3.0'
             # cpu_limits = '4.0'
             start = datetime.datetime.now()
-            k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name, None, None, container_port=images.items()[j][1])
+            k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name, None, None, container_port=(images.items())[j][1])
             print('Create deployment: %s' % deployment_name)
 
             svc_name = node_name + '-' + str(random.randint(1, 1000)) + '-service'
@@ -105,10 +105,10 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             time.sleep(1)
             # notify node to delete image
             if hasImage is False:
-                worker_socket.send_string('False:' + images.items()[j][0])
+                worker_socket.send_string('False:' + (images.items())[j][0])
                 worker_socket.recv_string()
             else:
-                worker_socket.send_string('True:' + images.items()[j][0])
+                worker_socket.send_string('True:' + (images.items())[j][0])
                 worker_socket.recv_string()
 
         total_time.append(sum(total_time[1:])/10)
