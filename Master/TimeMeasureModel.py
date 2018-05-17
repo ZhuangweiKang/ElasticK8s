@@ -114,8 +114,9 @@ def timeMeasurementExperiment(hasImage):
                     sk.connect(('http://129.59.107.141', 30000))
                     print('Server port 30000 OK!')
                     break
-                except Exception:
-                    print('Server port 30000 not connect!')
+                except Exception as ex:
+                    # print('Server port 30000 not connect!')
+                    print(ex)
                 finally:
                     sk.close()
 
