@@ -135,6 +135,8 @@ def main():
     thr2.setDaemon(True)
     thr1.start()
     thr2.start()
+    while True:
+        pass
 
 if __name__ == '__main__':
     main()
