@@ -87,7 +87,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
                 try:
                     sc=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
                     sc.settimeout(2)
-                    sc.connect((node_address, '30000'))
+                    sc.connect((node_address, 30000))
                     sc.close()
                 except Exception as ex:
                     print(ex)
