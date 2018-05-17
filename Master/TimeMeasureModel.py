@@ -99,7 +99,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             os.system('kubectl delete svc %s --force --now' % svc_name)
             os.system('kubectl delete deploy --all --now --force')
 
-            
+            '''
             print('Waiting for pod to be terminated...')
             while True:
                 command = 'kubectl get pods -o json'
@@ -107,7 +107,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
                 data = simplejson.loads(_exec.read())
                 if(len(data['items']) == 0):
                     break
-            
+            '''
 
             # notify node to delete image
             if hasImage is False:
@@ -129,9 +129,10 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
 
 
 def main():
-    thr1 = threading.Thread(target=timeMeasurementExperiment, args=[False, 'ContainerPrepareTimeReport.csv', 'kang4', '129.59.107.141', 30000, ])
-    thr2 = threading.Thread(target=timeMeasurementExperiment, args=[True, 'ContainerPrepareTimeReport(image-available)', 'kang5', '129.59.107.144', 30001, ])
-
+    thr1 = threading.Thread(target=timeMeasurementExperiment, args=(False, 'ContainerPrepareTimeReport.csv', 'kang4', '129.59.107.141', 30000, ))
+    thr1.daemon = True
+    thr2 = threading.Thread(target=timeMeasurementExperiment, args=(True, 'ContainerPrepareTimeReport(image-available)', 'kang5', '129.59.107.144', 30001, ))
+    thr2.daemon = True
     thr1.start()
     thr2.start()
 
