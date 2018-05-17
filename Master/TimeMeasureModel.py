@@ -65,6 +65,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             k8sop.create_svc(svc_name, selector_label, _node_port=node_port)
             print('Create service: %s' % svc_name)
             
+            '''
             print('Waiting for container ready...')
             while True:
                 command = 'kubectl get pods -o json'
@@ -75,6 +76,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
                         break
                 except Exception as ex:
                     print(ex)
+            '''
 
             print('Waiting for container to load model...')
             
@@ -97,7 +99,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             total_time.append(duration)
 
             os.system('kubectl delete svc %s --force --now' % svc_name)
-            os.system('kubectl delete deploy --all --now --force')
+            os.system('kubectl delete deploy %s --now --force' % deployment_name)
 
             '''
             print('Waiting for pod to be terminated...')
@@ -108,7 +110,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
                 if(len(data['items']) == 0):
                     break
             '''
-
+            time.sleep(3)
             # notify node to delete image
             if hasImage is False:
                 worker_socket.send_string('delete:' + images[j])
@@ -129,8 +131,16 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
 
 
 def main():
-    # timeMeasurementExperiment(False, 'ContainerPrepareTimeReport.csv', 'kang4', '129.59.107.141', 30000)
-    timeMeasurementExperiment(True, 'ContainerPrepareTimeReport(image-available)', 'kang5', '129.59.107.144', 30001)
+    thr1 = threading.Thread(target=timeMeasurementExperiment, args=('ContainerPrepareTimeReport.csv', 'kang4', '129.59.107.141', 30000, ))
+    thr1.setDaemon(True)
+    thr2 = threading.Thread(target=timeMeasurementExperiment, args=('ContainerPrepareTimeReport(image-available)', 'kang5', '129.59.107.144', 30001, ))
+    thr2.setDaemon(True)
+
+    thr1.start()
+    thr2.start()
+
+    while True:
+        pass
     
 if __name__ == '__main__':
     main()
