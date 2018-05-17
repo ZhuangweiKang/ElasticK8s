@@ -16,19 +16,21 @@ import threading
 from K8sOperations import K8sOperations as K8sOp
 
 
-images = {
-    'docgroupvandy/xceptionkeras' : 7000, 
-    'docgroupvandy/vgg16keras': 7001, 
-    'docgroupvandy/vgg19keras' : 7002, 
-    'docgroupvandy/resnet50keras' : 7003, 
-    'docgroupvandy/inceptionv3keras': 7004, 
-    'docgroupvandy/inceptionresnetv2keras' : 7005,
-    'docgroupvandy/mobilenetkeras' : 7006, 
-    'docgroupvandy/densenet121keras' : 7007, 
-    'docgroupvandy/densenet169keras' : 7008, 
-    'docgroupvandy/densenet201keras' : 7009, 
-    'docgroupvandy/word2vec_google': 7010, 
-    'docgroupvandy/word2vec_glove': 7011}
+images = [
+    'docgroupvandy/xceptionkeras', 
+    'docgroupvandy/vgg16keras', 
+    'docgroupvandy/vgg19keras', 
+    'docgroupvandy/resnet50keras', 
+    'docgroupvandy/inceptionv3keras', 
+    'docgroupvandy/inceptionresnetv2keras',
+    'docgroupvandy/mobilenetkeras', 
+    'docgroupvandy/densenet121keras', 
+    'docgroupvandy/densenet169keras', 
+    'docgroupvandy/densenet201keras', 
+    'docgroupvandy/word2vec_google', 
+    'docgroupvandy/word2vec_glove']
+
+ports = [7000, 7001, 7002, 7003, 7004, 7005, 7006, 7007, 7008, 7009, 7010, 7011]
 
 def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, node_port):
     def write_csv(row, csv_file=output_file):
@@ -51,10 +53,10 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
     # create one deployment in each node
     k8sop = K8sOp()
     worker_socket = connect_worker()
-
-    for j in range(len(images.items())):
-        print('Image: %s\n' % (images.items())[j][0])
-        total_time = [(images.items())[j][0]]
+    
+    for j in range(len(images)):
+        print('Image: %s\n' % images[j])
+        total_time = [images[j]]
         for k in range(10):
             print('Test-%d' % (k+1))
 
@@ -62,12 +64,12 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             node_name = node_name
             deployment_name = node_name + '-' + str(random.randint(1, 1000)) + '-deployment'
             pod_label = node_name + '-' + str(random.randint(1, 1000)) + '-pod'
-            image_name = (images.items())[j][0]
+            image_name = images[j]
             container_name = pod_label
             # cpu_requests = '3.0'
             # cpu_limits = '4.0'
             start = datetime.datetime.now()
-            k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name, None, None, container_port=(images.items())[j][1])
+            k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name, None, None, container_port=ports[j])
             print('Create deployment: %s' % deployment_name)
 
             svc_name = node_name + '-' + str(random.randint(1, 1000)) + '-service'
@@ -105,10 +107,10 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             time.sleep(1)
             # notify node to delete image
             if hasImage is False:
-                worker_socket.send_string('False:' + (images.items())[j][0])
+                worker_socket.send_string('False:' + images[j])
                 worker_socket.recv_string()
             else:
-                worker_socket.send_string('True:' + (images.items())[j][0])
+                worker_socket.send_string('True:' + images[j])
                 worker_socket.recv_string()
 
         total_time.append(sum(total_time[1:])/10)
