@@ -129,14 +129,8 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
 
 
 def main():
-    thr1 = threading.Thread(target=timeMeasurementExperiment, args=(False, 'ContainerPrepareTimeReport.csv', 'kang4', '129.59.107.141', 30000, ))
-    thr1.setDaemon(True)
-    thr2 = threading.Thread(target=timeMeasurementExperiment, args=(True, 'ContainerPrepareTimeReport(image-available)', 'kang5', '129.59.107.144', 30001, ))
-    thr2.setDaemon(True)
-    thr1.start()
-    thr2.start()
-    while True:
-        pass
-
+    # timeMeasurementExperiment(False, 'ContainerPrepareTimeReport.csv', 'kang4', '129.59.107.141', 30000)
+    timeMeasurementExperiment(True, 'ContainerPrepareTimeReport(image-available)', 'kang5', '129.59.107.144', 30001)
+    
 if __name__ == '__main__':
     main()
