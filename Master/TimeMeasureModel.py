@@ -74,11 +74,13 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
                     crl.setopt(pycurl.POST, 1)
                     crl.setopt(pycurl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
                     crl.setopt(pycurl.URL, url)
-                    crl.setopt(pycurl.TIMEOUT, 60)
+                    crl.setopt(pycurl.CONNECTTIMEOUT, 1)
+                    crl.setopt(pycurl.TIMEOUT, 5)
                     crl.perform()
                     crl.close()
                     break
                 except pycurl.error:
+                    crl.close()
                     time.sleep(3)
 
             end = datetime.datetime.now()
