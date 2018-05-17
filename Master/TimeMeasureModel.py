@@ -12,6 +12,7 @@ import urllib
 import socket
 import simplejson
 import random
+import threading
 from K8sOperations import K8sOperations as K8sOp
 
 
@@ -85,9 +86,10 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
                     crl.setopt(pycurl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
                     crl.setopt(pycurl.URL, url)
                     crl.perform()
+                    crl.close()
                     break
-                except pycurl.error as er:
-                    print(er)
+                except pycurl.error:
+                    time.sleep(1)
 
             end = datetime.datetime.now()
 
@@ -97,11 +99,18 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             os.system('kubectl delete svc %s' % svc_name)
             os.system('kubectl delete deploy --all')
 
+            print('Waiting for pod to be terminated...')
+            while True:
+                command = 'kubectl get pods -o json'
+                _exec = os.popen(command)
+                if(len(simplejson.loads(_exec.read())['items']) == 0):
+                    break
+            
             # notify node to delete image
             if hasImage is False:
                 worker_socket.send_string('delete:' + images[j])
                 worker_socket.recv_string()
-            time.sleep(10)
+            time.sleep(2)
 
         total_time.append(sum(total_time[1:])/10)
         for m, item in enumerate(total_time[:]):
@@ -117,8 +126,11 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
 
 
 def main():
-    timeMeasurementExperiment(False, 'ContainerPrepareTimeReport.csv', 'kang4', '129.59.107.141')
-    timeMeasurementExperiment(True, 'ContainerPrepareTimeReport(image-available)', 'kang5', '129.59.107.144')
+    thr1 = threading.Thread(target=timeMeasurementExperiment, args=[False, 'ContainerPrepareTimeReport.csv', 'kang4', '129.59.107.141', ])
+    thr2 = threading.Thread(target=timeMeasurementExperiment, args=[True, 'ContainerPrepareTimeReport(image-available)', 'kang5', '129.59.107.144',])
+
+    thr1.start()
+    thr2.start()
 
 if __name__ == '__main__':
     main()
