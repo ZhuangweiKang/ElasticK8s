@@ -128,11 +128,11 @@ def timeMeasurementExperiment(hasImage):
             crl.setopt(pycurl.URL, url)
             crl.setopt(crl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
             crl.setopt(pycurl.HTTPHEADER, ['Accept-Language: en'])
-            crl.setopt(pycurl.CONNECTTIMEOUT, 500)
+            crl.setopt(pycurl.CONNECTTIMEOUT, 300)
+            crl.setopt(pycurl.TIMEOUT, 300)
             print('Waiting for container to load model...')
-            crl.perform()
+            # crl.perform()
 
-            '''
             while True:
                 try:
                     crl.perform()
@@ -140,8 +140,7 @@ def timeMeasurementExperiment(hasImage):
                         break
                 except pycurl.error as er:
                     print(er)
-            '''
-            
+
             print(crl.getinfo(pycurl.RESPONSE_CODE))
             # print(crl.fp.getvalue())
             crl.close()
