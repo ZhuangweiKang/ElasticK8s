@@ -118,7 +118,7 @@ def timeMeasurementExperiment(hasImage):
                 try:
                     crl.perform()
                     if crl.getinfo(crl.RESPONSE_CODE) == 200: 
-                    break
+                        break
                 except pycurl.error:
                     continue
 
