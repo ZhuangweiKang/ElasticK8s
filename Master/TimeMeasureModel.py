@@ -66,10 +66,8 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             url = 'http://%s:30000/predict' % node_address
             crl = pycurl.Curl()
             crl.setopt(pycurl.URL, url)
-            crl.setopt(pycurl.MAXREDIRS, 5)
-            crl.setopt(pycurl.CONNECTTIMEOUT, 6000000)
-            crl.setopt(pycurl.TIMEOUT, 300000000)
-            crl.setopt(crl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
+            crl.setopt(pycurl.POST, 1)
+            crl.setopt(pycurl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
             
             while True:
                 try:
@@ -88,7 +86,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
 
             os.system('kubectl delete svc %s' % svc_name)
             os.system('kubectl delete deploy --all')
-
+            time.sleep(10)
             # notify node to delete image
             if hasImage is False:
                 worker_socket.send_string('delete:' + images[j])
