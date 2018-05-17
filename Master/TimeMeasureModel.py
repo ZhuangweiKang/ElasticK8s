@@ -65,19 +65,6 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             k8sop.create_svc(svc_name, selector_label, _node_port=node_port)
             print('Create service: %s' % svc_name)
             
-            '''
-            print('Waiting for container ready...')
-            while True:
-                command = 'kubectl get pods -o json'
-                _exec = os.popen(command)
-                data = simplejson.loads(_exec.read())
-                try:
-                    if len(data['items']) != 0 and data['items'][0]['status']['conditions'][1]['type'] == 'Ready':
-                        break
-                except Exception as ex:
-                    print(ex)
-            '''
-
             print('Waiting for container to load model...')
             
             while True:
@@ -87,6 +74,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
                     crl.setopt(pycurl.POST, 1)
                     crl.setopt(pycurl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
                     crl.setopt(pycurl.URL, url)
+                    crl.setopt(pycurl.TIMEOUT, 60)
                     crl.perform()
                     crl.close()
                     break
@@ -101,15 +89,6 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             os.system('kubectl delete svc %s --force --now' % svc_name)
             os.system('kubectl delete deploy %s --now --force' % deployment_name)
 
-            '''
-            print('Waiting for pod to be terminated...')
-            while True:
-                command = 'kubectl get pods -o json'
-                _exec = os.popen(command)
-                data = simplejson.loads(_exec.read())
-                if(len(data['items']) == 0):
-                    break
-            '''
             time.sleep(3)
             # notify node to delete image
             if hasImage is False:
