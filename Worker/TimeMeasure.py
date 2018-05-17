@@ -19,4 +19,9 @@ while True:
     command = 'docker rmi -f %s' % image
     _exec = os.popen(command)
     print(_exec.read())
+
+    command = 'docker rmi $(docker images | grep "^<none>" | awk "{print $3}")'
+    _exec = os.popen(command)
+    print(_exec.read())
+    
     socket.send_string('Ack')
