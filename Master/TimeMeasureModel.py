@@ -63,34 +63,21 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             print('Create service: %s' % svc_name)
             
             print('Waiting for container to load model...')
-            # crl.perform()
-
-            '''
+            url = 'http://%s:30000/predict' % node_address
+            crl = pycurl.Curl()
+            crl.setopt(crl.POST, 1)
+            crl.setopt(pycurl.URL, url)
+            crl.setopt(crl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
+            crl.setopt(pycurl.HTTPHEADER, ['Accept-Language: en'])
+            crl.setopt(pycurl.TIMEOUT, 100000000000)
             while True:
                 try:
-                    url = 'http://%s:30000/predict' % node_address
-                    crl = pycurl.Curl()
-                    crl.setopt(crl.POST, 1)
-                    crl.setopt(pycurl.URL, url)
-                    crl.setopt(crl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
-                    crl.setopt(pycurl.HTTPHEADER, ['Accept-Language: en'])
-                    # crl.setopt(pycurl.TIMEOUT, 1000)
                     crl.perform()
                     if crl.getinfo(crl.RESPONSE_CODE) == 200: 
                         break
                     crl.close()
                 except pycurl.error as er:
                     print(er)
-            '''
-
-            while True:
-                try:
-                    sc=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-                    sc.settimeout(2)
-                    sc.connect((node_address, 30000))
-                    sc.close()
-                except Exception as ex:
-                    print(ex)
 
             end = time.time()
             print('Time: %f' % end)
