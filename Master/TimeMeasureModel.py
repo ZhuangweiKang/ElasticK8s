@@ -130,7 +130,7 @@ def timeMeasurementExperiment(hasImage):
             crl.setopt(pycurl.HTTPHEADER, ['Accept-Language: en'])
             crl.setopt(pycurl.TIMEOUT, 10)
             print('Waiting for container to load model...')
-            crl.perform()
+            # crl.perform()
 
             while True:
                 try:
@@ -141,7 +141,7 @@ def timeMeasurementExperiment(hasImage):
                     continue
                 finally:
                     crl.close()
-                    
+
             print(crl.getinfo(pycurl.RESPONSE_CODE))
             # print(crl.fp.getvalue())
             # crl.close()
