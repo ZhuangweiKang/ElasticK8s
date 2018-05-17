@@ -68,12 +68,10 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             crl.setopt(pycurl.URL, url)
             crl.setopt(pycurl.POST, 1)
             crl.setopt(pycurl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
-            
+            crl.setopt(pycurl.TCP_KEEPALIVE, 1)
             while True:
                 try:
                     crl.perform()
-                    if crl.getinfo(crl.RESPONSE_CODE) == 200: 
-                        break
                     crl.close()
                 except pycurl.error as er:
                     print(er)
