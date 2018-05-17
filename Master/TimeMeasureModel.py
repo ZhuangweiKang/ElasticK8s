@@ -117,11 +117,11 @@ def timeMeasurementExperiment(hasImage):
             while True:
                 try:
                     crl.perform()
-                    print(crl.getinfo(pycurl.RESPONSE_CODE))
                     break
                 except Exception:
                     continue
 
+            print(crl.getinfo(pycurl.RESPONSE_CODE))
             # print(crl.fp.getvalue())
             crl.close()
             
