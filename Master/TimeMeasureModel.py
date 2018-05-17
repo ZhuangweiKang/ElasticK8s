@@ -100,8 +100,6 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
                 worker_socket.send_string('True:' + images[j])
                 worker_socket.recv_string()
 
-            time.sleep(10)
-
         total_time.append(sum(total_time[1:])/10)
         for m, item in enumerate(total_time[:]):
             if m != 0:
