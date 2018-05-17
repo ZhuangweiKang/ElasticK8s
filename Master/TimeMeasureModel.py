@@ -4,6 +4,7 @@
 import os
 import csv
 import zmq
+import datetime
 import time
 import socket
 import pycurl
@@ -53,7 +54,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             container_name = pod_label
             cpu_requests = '0.5'
             cpu_limits = '1.0'
-            start = time.time()
+            start = datetime.datetime.now()
             k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
             print('Create deployment: %s' % deployment_name)
 
@@ -63,34 +64,37 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             print('Create service: %s' % svc_name)
             
             print('Waiting for container to load model...')
-            url = 'http://%s:30000/predict' % node_address
-            crl = pycurl.Curl()
-            crl.setopt(pycurl.POST, 1)
-            crl.setopt(pycurl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
             
             while True:
                 try:
+                    url = 'http://%s:30000/predict' % node_address
+                    crl = pycurl.Curl()
+                    crl.setopt(pycurl.POST, 1)
+                    crl.setopt(pycurl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
                     crl.setopt(pycurl.URL, url)
                     crl.perform()
                     break
                 except pycurl.error as er:
                     print(er)
+                    time.sleep(1)
+                finally:
+                    crl.close()
 
-            crl.close()
-            end = time.time()
+            end = datetime.datetime.now()
             print('Time: %f' % end)
 
-            duration = end - start
+            duration = (end - start).seconds
             total_time.append(duration)
 
             os.system('kubectl delete svc %s' % svc_name)
             os.system('kubectl delete deploy --all')
-            time.sleep(10)
+
             # notify node to delete image
             if hasImage is False:
                 worker_socket.send_string('delete:' + images[j])
                 worker_socket.recv_string()
 
+            time.sleep(3)
         total_time.append(sum(total_time[1:])/10)
         for m, item in enumerate(total_time[:]):
             if m != 0:
