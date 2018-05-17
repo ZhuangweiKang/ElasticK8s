@@ -104,7 +104,7 @@ def timeMeasurementExperiment(hasImage):
             svc_name = 'kang4-service'
             selector_label = 'worker4'
             k8sop.create_svc(svc_name, selector_label)
-            print('Create service here...')
+            print('Create service...')
             
             url = 'http://129.59.107.141:30000/predict'
             crl = pycurl.Curl()
@@ -119,6 +119,7 @@ def timeMeasurementExperiment(hasImage):
                     crl.perform()
                     break
                 except Exception:
+                    crl.close()
                     continue
 
             print(crl.getinfo(pycurl.RESPONSE_CODE))
