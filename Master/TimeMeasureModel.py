@@ -39,8 +39,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
 
     # create one deployment in each node
     k8sop = K8sOp()
-    if hasImage is False:
-        worker_socket = connect_worker()
+    worker_socket = connect_worker()
 
     for j in range(len(images)):
         print('Image: %s\n' % images[j])
@@ -95,8 +94,12 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             time.sleep(1)
             # notify node to delete image
             if hasImage is False:
-                worker_socket.send_string('delete:' + images[j])
+                worker_socket.send_string('False:' + images[j])
                 worker_socket.recv_string()
+            else:
+                worker_socket.send_string('True:' + images[j])
+                worker_socket.recv_string()
+                
             time.sleep(1)
 
         total_time.append(sum(total_time[1:])/10)
