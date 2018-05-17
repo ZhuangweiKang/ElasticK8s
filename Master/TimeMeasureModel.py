@@ -108,14 +108,16 @@ def timeMeasurementExperiment(hasImage):
             print('Create service...')
             
             sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sk.settimeout(1)
             while True:
                 try:
                     sk.connect(('http://129.59.107.141', 30000))
                     print('Server port 30000 OK!')
-                    sk.close()
                     break
                 except Exception:
                     print('Server port 30000 not connect!')
+                finally:
+                    sk.close()
 
             url = 'http://129.59.107.141:30000/predict'
             crl = pycurl.Curl()
