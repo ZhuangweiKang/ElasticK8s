@@ -105,7 +105,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
                 command = 'kubectl get pods -o json'
                 _exec = os.popen(command)
                 data = simplejson.loads(_exec.read())
-                if(len(simplejson.loads(_exec.read())['items']) == 0):
+                if(len(data['items']) == 0):
                     break
             
 
