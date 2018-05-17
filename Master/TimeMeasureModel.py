@@ -76,15 +76,14 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
                     break
                 except pycurl.error as er:
                     print(er)
-                    time.sleep(1)
+                    time.sleep(3)
                 finally:
                     crl.close()
 
             end = datetime.datetime.now()
-            print('Time: %f' % end)
 
             duration = (end - start).seconds
-            total_time.append(duration)
+            total_time.append(duration-3)
 
             os.system('kubectl delete svc %s' % svc_name)
             os.system('kubectl delete deploy --all')
