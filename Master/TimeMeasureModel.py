@@ -107,6 +107,7 @@ def timeMeasurementExperiment(hasImage):
             k8sop.create_svc(svc_name, selector_label)
             print('Create service...')
             
+            '''
             sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sk.settimeout(1)
             while True:
@@ -119,6 +120,7 @@ def timeMeasurementExperiment(hasImage):
                     print(ex)
                 finally:
                     sk.close()
+            '''
 
             url = 'http://129.59.107.141:30000/predict'
             crl = pycurl.Curl()
@@ -126,10 +128,10 @@ def timeMeasurementExperiment(hasImage):
             crl.setopt(pycurl.URL, url)
             crl.setopt(crl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
             crl.setopt(pycurl.HTTPHEADER, ['Accept-Language: en'])
+            crl.setopt(pycurl.TIMEOUT, 10)
             print('Waiting for container to load model...')
             crl.perform()
 
-            '''
             while True:
                 try:
                     crl.perform()
@@ -137,9 +139,10 @@ def timeMeasurementExperiment(hasImage):
                         break
                 except pycurl.error:
                     continue
-            '''
-
-            # print(crl.getinfo(pycurl.RESPONSE_CODE))
+                finally:
+                    crl.close()
+                    
+            print(crl.getinfo(pycurl.RESPONSE_CODE))
             # print(crl.fp.getvalue())
             # crl.close()
             
