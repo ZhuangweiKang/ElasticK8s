@@ -79,7 +79,8 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
                     crl.perform()
                     crl.close()
                     break
-                except pycurl.error:
+                except pycurl.error as er:
+                    print(er)
                     crl.close()
                     time.sleep(1)
 
