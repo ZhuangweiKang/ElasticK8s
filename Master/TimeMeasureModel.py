@@ -19,7 +19,7 @@ from K8sOperations import K8sOperations as K8sOp
 images = ['docgroupvandy/xceptionkeras', 'docgroupvandy/k8s-demo', 'docgroupvandy/vgg16keras', 'docgroupvandy/vgg19keras', 'docgroupvandy/resnet50keras', 'docgroupvandy/inceptionv3keras', 'docgroupvandy/inceptionresnetv2keras',
           'docgroupvandy/mobilenetkeras', 'docgroupvandy/densenet121keras', 'docgroupvandy/densenet169keras', 'docgroupvandy/densenet201keras', 'docgroupvandy/word2vec_google', 'docgroupvandy/speech-to-text-wavenet', 'docgroupvandy/word2vec_glove']
 
-def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
+def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, node_port):
     def write_csv(row, csv_file=output_file):
         headers = ['Image', 'Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6', 'Test7', 'Test8', 'Test9', 'Test10', 'Average']
         with open(csv_file, 'a') as f:
@@ -62,7 +62,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
 
             svc_name = node_name + '-' + str(random.randint(1, 1000)) + '-service'
             selector_label = pod_label
-            k8sop.create_svc(svc_name, selector_label)
+            k8sop.create_svc(svc_name, selector_label, _node_port=node_port)
             print('Create service: %s' % svc_name)
             
             print('Waiting for container ready...')
@@ -80,7 +80,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             
             while True:
                 try:
-                    url = 'http://%s:30000/predict' % node_address
+                    url = 'http://%s:%d/predict' % (node_address, node_port)
                     crl = pycurl.Curl()
                     crl.setopt(pycurl.POST, 1)
                     crl.setopt(pycurl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
@@ -126,8 +126,8 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
 
 
 def main():
-    thr1 = threading.Thread(target=timeMeasurementExperiment, args=[False, 'ContainerPrepareTimeReport.csv', 'kang4', '129.59.107.141', ])
-    thr2 = threading.Thread(target=timeMeasurementExperiment, args=[True, 'ContainerPrepareTimeReport(image-available)', 'kang5', '129.59.107.144',])
+    thr1 = threading.Thread(target=timeMeasurementExperiment, args=[False, 'ContainerPrepareTimeReport.csv', 'kang4', '129.59.107.141', 30000, ])
+    thr2 = threading.Thread(target=timeMeasurementExperiment, args=[True, 'ContainerPrepareTimeReport(image-available)', 'kang5', '129.59.107.144', 30001, ])
 
     thr1.start()
     thr2.start()
