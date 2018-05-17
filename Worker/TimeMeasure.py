@@ -13,6 +13,10 @@ while True:
         _exec = os.popen(get_container_id)
         if _exec.read() == '':
             break
+    # double delete container
+    command = 'docker rm -f ' + get_container_id
+    os.system(command)
+    
     time.sleep(1)
     print('Container has been deleted.')
     if msg.split(':')[0] == 'False':

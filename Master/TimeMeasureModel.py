@@ -16,8 +16,19 @@ import threading
 from K8sOperations import K8sOperations as K8sOp
 
 
-images = ['docgroupvandy/k8s-demo', 'docgroupvandy/vgg16keras', 'docgroupvandy/vgg19keras', 'docgroupvandy/resnet50keras', 'docgroupvandy/inceptionv3keras', 'docgroupvandy/inceptionresnetv2keras',
-          'docgroupvandy/mobilenetkeras', 'docgroupvandy/densenet121keras', 'docgroupvandy/densenet169keras', 'docgroupvandy/densenet201keras', 'docgroupvandy/word2vec_google', 'docgroupvandy/speech-to-text-wavenet', 'docgroupvandy/word2vec_glove']
+images = {
+    'docgroupvandy/xceptionkeras' : 7000, 
+    'docgroupvandy/vgg16keras': 7001, 
+    'docgroupvandy/vgg19keras' : 7002, 
+    'docgroupvandy/resnet50keras' : 7003, 
+    'docgroupvandy/inceptionv3keras': 7004, 
+    'docgroupvandy/inceptionresnetv2keras' : 7005,
+    'docgroupvandy/mobilenetkeras' : 7006, 
+    'docgroupvandy/densenet121keras' : 7007, 
+    'docgroupvandy/densenet169keras' : 7008, 
+    'docgroupvandy/densenet201keras' : 7009, 
+    'docgroupvandy/word2vec_google': 7010, 
+    'docgroupvandy/word2vec_glove': 7011}
 
 def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, node_port):
     def write_csv(row, csv_file=output_file):
@@ -51,12 +62,12 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             node_name = node_name
             deployment_name = node_name + '-' + str(random.randint(1, 1000)) + '-deployment'
             pod_label = node_name + '-' + str(random.randint(1, 1000)) + '-pod'
-            image_name = images[j]
+            image_name = images.items()[j][0]
             container_name = pod_label
             # cpu_requests = '3.0'
             # cpu_limits = '4.0'
             start = datetime.datetime.now()
-            k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name, None, None, container_port=7000)
+            k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name, None, None, container_port=images.items()[j][1])
             print('Create deployment: %s' % deployment_name)
 
             svc_name = node_name + '-' + str(random.randint(1, 1000)) + '-service'
