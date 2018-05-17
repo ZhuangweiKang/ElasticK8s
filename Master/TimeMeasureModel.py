@@ -17,8 +17,8 @@ from K8sOperations import K8sOperations as K8sOp
 
 
 images = [
-    'docgroupvandy/xceptionkeras', 
-    'docgroupvandy/vgg16keras', 
+    'docgroupvandy/vgg16keras',
+    'docgroupvandy/xceptionkeras',  
     'docgroupvandy/vgg19keras', 
     'docgroupvandy/resnet50keras', 
     'docgroupvandy/inceptionv3keras', 
@@ -30,7 +30,7 @@ images = [
     'docgroupvandy/word2vec_google', 
     'docgroupvandy/word2vec_glove']
 
-ports = [7000, 7001, 7002, 7003, 7004, 7005, 7006, 7007, 7008, 7009, 7010, 7011]
+ports = [7001, 7000, 7002, 7003, 7004, 7005, 7006, 7007, 7008, 7009, 7010, 7011]
 
 def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, node_port):
     def write_csv(row, csv_file=output_file):
