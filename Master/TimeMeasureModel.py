@@ -6,6 +6,7 @@ import csv
 import simplejson
 import zmq
 import time
+import socket
 import pycurl
 import urllib
 from io import StringIO
@@ -106,6 +107,15 @@ def timeMeasurementExperiment(hasImage):
             k8sop.create_svc(svc_name, selector_label)
             print('Create service...')
             
+            sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            while True:
+                try:
+                    sk.connect(('http://129.59.107.141', 30000))
+                    print('Server port 30000 OK!')
+                    break
+                except Exception:
+                    print('Server port 30000 not connect!')
+
             url = 'http://129.59.107.141:30000/predict'
             crl = pycurl.Curl()
             crl.setopt(crl.POST, 1)
@@ -113,7 +123,9 @@ def timeMeasurementExperiment(hasImage):
             crl.setopt(crl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
             crl.setopt(pycurl.HTTPHEADER, ['Accept-Language: en'])
             print('Waiting for container to load model...')
+            crl.perform()
 
+            '''
             while True:
                 try:
                     crl.perform()
@@ -121,10 +133,11 @@ def timeMeasurementExperiment(hasImage):
                         break
                 except pycurl.error:
                     continue
+            '''
 
-            print(crl.getinfo(pycurl.RESPONSE_CODE))
+            # print(crl.getinfo(pycurl.RESPONSE_CODE))
             # print(crl.fp.getvalue())
-            crl.close()
+            # crl.close()
             
             '''
             while True:
