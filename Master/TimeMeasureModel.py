@@ -73,7 +73,6 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
                     crl.setopt(pycurl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
                     crl.setopt(pycurl.URL, url)
                     crl.perform()
-
                     break
                 except pycurl.error as er:
                     print(er)
