@@ -73,7 +73,6 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
                     crl.setopt(crl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
                     crl.setopt(pycurl.HTTPHEADER, ['Accept-Language: en'])
                     # crl.setopt(pycurl.TIMEOUT, 1000)
-                    crl.setopt(pycurl)
                     crl.perform()
                     if crl.getinfo(crl.RESPONSE_CODE) == 200: 
                         break
