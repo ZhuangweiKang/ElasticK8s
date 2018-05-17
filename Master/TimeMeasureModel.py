@@ -52,8 +52,8 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             pod_label = node_name + '-' + str(random.randint(1, 1000)) + '-pod'
             image_name = images[j]
             container_name = pod_label
-            # cpu_requests = '0.5'
-            # cpu_limits = '1.0'
+            cpu_requests = '6.0'
+            cpu_limits = '6.0'
             start = datetime.datetime.now()
             k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
             print('Create deployment: %s' % deployment_name)
