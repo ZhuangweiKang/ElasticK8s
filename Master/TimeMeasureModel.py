@@ -73,17 +73,14 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
                     crl.setopt(pycurl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
                     crl.setopt(pycurl.URL, url)
                     crl.perform()
-                    crl.close()
                     break
                 except pycurl.error as er:
                     print(er)
-                    crl.close()
-                    time.sleep(5)
 
             end = datetime.datetime.now()
 
             duration = (end - start).seconds
-            total_time.append(duration-5)
+            total_time.append(duration)
 
             os.system('kubectl delete svc %s' % svc_name)
             os.system('kubectl delete deploy --all')
