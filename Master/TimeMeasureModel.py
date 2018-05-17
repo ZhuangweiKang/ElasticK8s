@@ -99,12 +99,14 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             os.system('kubectl delete svc %s' % svc_name)
             os.system('kubectl delete deploy --all')
 
+            '''
             print('Waiting for pod to be terminated...')
             while True:
                 command = 'kubectl get pods -o json'
                 _exec = os.popen(command)
                 if(len(simplejson.loads(_exec.read())['items']) == 0):
                     break
+            '''
             
             # notify node to delete image
             if hasImage is False:
