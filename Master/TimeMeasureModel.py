@@ -3,66 +3,20 @@
 
 import os
 import csv
-import simplejson
 import zmq
 import time
 import socket
 import pycurl
 import urllib
-from io import StringIO
 import random
-import json
 from K8sOperations import K8sOperations as K8sOp
 
-# Measure the time required to downloading image and make the container ready
-# total_time = creating_deployment + schedual_deployment + downloading_image + create_container
-'''
-def measureContainerPrepareTime(pod_label):
-    ready_flag = init_flag = False
-    while (ready_flag and init_flag) is False:
-        try:
-            command = 'kubectl get pods -l app=%s -o json' % pod_label
-            obj = os.popen(command)
-            obj = simplejson.loads(obj.read())
-            conditions = obj['items'][0]['status']['conditions']
-            for condition in conditions:
-                if condition['type'] == 'Initialized' and condition['status'] == 'True':
-                    init_flag = True
-                    initialized = {'type': 'Initialized', 'time': condition['lastTransitionTime']}
-                if condition['type'] == 'Ready' and condition['status'] == 'True':
-                    ready_flag = True
-                    ready = {'type': 'Ready', 'time': condition['lastTransitionTime']}
-        except Exception:
-            continue
 
-    print('Initialized: %s' % initialized)
-    print('Ready: %s' % ready)
+images = ['docgroupvandy/xceptionkeras', 'docgroupvandy/k8s-demo', 'docgroupvandy/vgg16keras', 'docgroupvandy/vgg19keras', 'docgroupvandy/resnet50keras', 'docgroupvandy/inceptionv3keras', 'docgroupvandy/inceptionresnetv2keras',
+          'docgroupvandy/mobilenetkeras', 'docgroupvandy/densenet121keras', 'docgroupvandy/densenet169keras', 'docgroupvandy/densenet201keras', 'docgroupvandy/word2vec_google', 'docgroupvandy/speech-to-text-wavenet', 'docgroupvandy/word2vec_glove']
 
-    # get duration between initialized state and ready state
-    def parse_time(_time):
-        _time = _time.split('T')[1].split('Z')[0].split(':')
-        hour = int(_time[0])
-        minute = int(_time[1])
-        second = int(_time[2])
-        return hour, minute, second
-
-    _inits = parse_time(initialized['time'])
-    _ready = parse_time(ready['time'])
-
-    duration = 3600 * (_ready[0] - _inits[0]) + 60 * (_ready[1] - _inits[1]) + (_ready[2] - _inits[2])
-
-    print('Total time of making container ready is %ds' % duration)
-    return duration
-'''
-
-def timeMeasurementExperiment(hasImage):
-    images = ['docgroupvandy/xceptionkeras', 'docgroupvandy/k8s-demo', 'docgroupvandy/vgg16keras', 'docgroupvandy/vgg19keras', 'docgroupvandy/resnet50keras', 'docgroupvandy/inceptionv3keras', 'docgroupvandy/inceptionresnetv2keras', 'docgroupvandy/mobilenetkeras', 'docgroupvandy/densenet121keras', 'docgroupvandy/densenet169keras', 'docgroupvandy/densenet201keras', 'docgroupvandy/word2vec_google', 'docgroupvandy/speech-to-text-wavenet', 'docgroupvandy/word2vec_glove']
-    def clear_deploy_service():
-        command = 'kubectl delete deploy --all && kubectl delete svc kang4-service'
-        _exec = os.popen(command)
-        print(_exec.read())
-
-    def write_csv(row, csv_file='./ContainerPrepareTimeReport.csv'):
+def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
+    def write_csv(row, csv_file=output_file):
         headers = ['Image', 'Test1', 'Test2', 'Test3', 'Test4', 'Test5', 'Test6', 'Test7', 'Test8', 'Test9', 'Test10', 'Average']
         with open(csv_file, 'a') as f:
             f_csv = csv.DictWriter(f, headers)
@@ -72,7 +26,7 @@ def timeMeasurementExperiment(hasImage):
             f_csv.writerow(data)
 
 
-    def connect_worker(address='tcp://129.59.107.141:2555'):
+    def connect_worker(address='tcp://%s:2555' % node_address):
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
         socket.connect(address)
@@ -83,8 +37,7 @@ def timeMeasurementExperiment(hasImage):
     k8sop = K8sOp()
     if hasImage is False:
         worker_socket = connect_worker()
-    clear_deploy_service()
-    time.sleep(3)
+
     for j in range(len(images)):
         print('Image: %s\n' % images[j])
         total_time = [images[j]]
@@ -92,9 +45,9 @@ def timeMeasurementExperiment(hasImage):
             print('Test-%d' % (k+1))
 
             # create deployment here
-            node_name = 'kang4'
-            deployment_name = 'kang%d-deployment' % random.randint(1, 1000)
-            pod_label = 'worker%d' % random.randint(1, 1000)
+            node_name = node_name
+            deployment_name = node_name + '-' + str(random.randint(1, 1000)) + '-deployment'
+            pod_label = node_name + '-' + str(random.randint(1, 1000)) + '-pod'
             image_name = images[j]
             container_name = pod_label
             cpu_requests = '0.5'
@@ -103,33 +56,17 @@ def timeMeasurementExperiment(hasImage):
             k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
             print('Create deployment...')
 
-            svc_name = 'kang%d-service' % random.randint(1, 1000)
+            svc_name = node_name + '-' + str(random.randint(1, 1000)) + '-service'
             selector_label = pod_label
             k8sop.create_svc(svc_name, selector_label)
             print('Create service...')
             
-            '''
-            sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sk.settimeout(1)
-            while True:
-                try:
-                    sk.connect(('http://129.59.107.141', 30000))
-                    print('Server port 30000 OK!')
-                    break
-                except Exception as ex:
-                    # print('Server port 30000 not connect!')
-                    print(ex)
-                finally:
-                    sk.close()
-            '''
-
-            url = 'http://129.59.107.141:30000/predict'
+            url = 'http://%s:30000/predict' % node_address
             crl = pycurl.Curl()
             crl.setopt(crl.POST, 1)
             crl.setopt(pycurl.URL, url)
             crl.setopt(crl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
             crl.setopt(pycurl.HTTPHEADER, ['Accept-Language: en'])
-            crl.setopt(pycurl.CONNECTTIMEOUT, 300)
             crl.setopt(pycurl.TIMEOUT, 300)
             print('Waiting for container to load model...')
             # crl.perform()
@@ -143,38 +80,16 @@ def timeMeasurementExperiment(hasImage):
                     print(er)
 
             print(crl.getinfo(pycurl.RESPONSE_CODE))
-            # print(crl.fp.getvalue())
             crl.close()
-            
-            '''
-            while True:
-                try:
-                    command = 'curl -X POST -F image=@owl.jpg \'http://129.59.107.141:30000/predict\' | jq \'.\''
-                    _exec = os.popen(command)
-                    result = simplejson.loads(_exec.read())
-                    break
-                except Exception:
-                    continue
-            '''
 
             end = time.time()
-            
+            print('Time: %f' % end)
+
             duration = end - start
-            # total_time.append(measureContainerPrepareTime(pod_label))
             total_time.append(duration)
-            # clear_deploy_service()
+
             os.system('kubectl delete svc %s' % svc_name)
             os.system('kubectl delete deploy --all')
-            
-            '''
-            print('Waiting for pod to be deleted.')
-            while True:
-                check_pod = 'kubectl get pods -o json'
-                _exec_ = os.popen(check_pod)
-                items = simplejson.loads(_exec_.read())
-                if len(items['items']) == 0:
-                    break
-            '''
 
             # notify node to delete image
             if hasImage is False:
@@ -194,5 +109,9 @@ def timeMeasurementExperiment(hasImage):
         total_time.clear()
 
 
-timeMeasurementExperiment(False)
-# timeMeasurementExperiment(True)
+def main():
+    timeMeasurementExperiment(False, 'ContainerPrepareTimeReport.csv', 'kang4', '129.59.107.141')
+    timeMeasurementExperiment(True, 'ContainerPrepareTimeReport(image-available)', 'kang5', '129.59.107.144')
+
+if __name__ == '__main__':
+    main()
