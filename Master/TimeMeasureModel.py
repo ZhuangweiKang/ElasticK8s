@@ -67,9 +67,10 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             crl = pycurl.Curl()
             crl.setopt(pycurl.URL, url)
             crl.setopt(pycurl.MAXREDIRS, 5)
-            crl.setopt(pycurl.CONNECTTIMEOUT, 60)
-            crl.setopt(pycurl.TIMEOUT, 300)
+            crl.setopt(pycurl.CONNECTTIMEOUT, 6000000)
+            crl.setopt(pycurl.TIMEOUT, 300000000)
             crl.setopt(crl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
+            
             while True:
                 try:
                     crl.perform()
