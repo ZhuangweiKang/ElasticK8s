@@ -69,8 +69,11 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
                 command = 'kubectl get pods -o json'
                 _exec = os.popen(command)
                 data = simplejson.loads(_exec.read())
-                if len(data['items']) != 0 and data['items'][0]['']:
-                    break
+                try:
+                    if len(data['items']) != 0 and data['items'][0]['status']['conditions'][2]['type'] == 'Ready':
+                        break
+                except Exception:
+                    pass
 
             print('Waiting for container to load model...')
             
