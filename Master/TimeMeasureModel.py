@@ -81,22 +81,22 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
                     break
                 except pycurl.error:
                     crl.close()
-                    time.sleep(3)
+                    time.sleep(1)
 
             end = datetime.datetime.now()
 
             duration = (end - start).seconds
-            total_time.append(duration - 3)
+            total_time.append(duration - 1)
 
             os.system('kubectl delete svc %s --force --now' % svc_name)
             os.system('kubectl delete deploy %s --now --force' % deployment_name)
 
-            time.sleep(3)
+            time.sleep(1)
             # notify node to delete image
             if hasImage is False:
                 worker_socket.send_string('delete:' + images[j])
                 worker_socket.recv_string()
-            time.sleep(2)
+            time.sleep(1)
 
         total_time.append(sum(total_time[1:])/10)
         for m, item in enumerate(total_time[:]):
