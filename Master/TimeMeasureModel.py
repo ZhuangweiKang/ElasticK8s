@@ -65,17 +65,18 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             print('Waiting for container to load model...')
             url = 'http://%s:30000/predict' % node_address
             crl = pycurl.Curl()
-            crl.setopt(pycurl.URL, url)
             crl.setopt(pycurl.POST, 1)
             crl.setopt(pycurl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
-            crl.setopt(pycurl.TCP_KEEPALIVE, 1)
+            
             while True:
                 try:
+                    crl.setopt(pycurl.URL, url)
                     crl.perform()
-                    crl.close()
+                    break
                 except pycurl.error as er:
                     print(er)
 
+            crl.close()
             end = time.time()
             print('Time: %f' % end)
 
