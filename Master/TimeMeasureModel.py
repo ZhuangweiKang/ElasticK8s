@@ -10,6 +10,7 @@ import socket
 import pycurl
 import urllib
 from io import StringIO
+import random
 import json
 from K8sOperations import K8sOperations as K8sOp
 
@@ -92,8 +93,8 @@ def timeMeasurementExperiment(hasImage):
 
             # create deployment here
             node_name = 'kang4'
-            deployment_name = 'kang4-deployment'
-            pod_label = 'worker4'
+            deployment_name = 'kang%d-deployment' % random.randint(1, 1000)
+            pod_label = 'worker%d' % random.randint(1, 1000)
             image_name = images[j]
             container_name = pod_label
             cpu_requests = '0.5'
@@ -102,8 +103,8 @@ def timeMeasurementExperiment(hasImage):
             k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
             print('Create deployment...')
 
-            svc_name = 'kang4-service'
-            selector_label = 'worker4'
+            svc_name = 'kang%d-service' % random.randint(1, 1000)
+            selector_label = pod_label
             k8sop.create_svc(svc_name, selector_label)
             print('Create service...')
             
@@ -162,6 +163,8 @@ def timeMeasurementExperiment(hasImage):
             # total_time.append(measureContainerPrepareTime(pod_label))
             total_time.append(duration)
             clear_deploy_service()
+
+            '''
             print('Waiting for pod to be deleted.')
             while True:
                 check_pod = 'kubectl get pods -o json'
@@ -169,8 +172,9 @@ def timeMeasurementExperiment(hasImage):
                 items = simplejson.loads(_exec_.read())
                 if len(items['items']) == 0:
                     break
+            '''
 
-            # notify node to delete image and wait until container is removed
+            # notify node to delete image
             if hasImage is False:
                 worker_socket.send_string('delete:' + images[j])
                 worker_socket.recv_string()
