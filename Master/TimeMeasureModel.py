@@ -139,12 +139,10 @@ def timeMeasurementExperiment(hasImage):
                         break
                 except pycurl.error as er:
                     print(er)
-                finally:
-                    crl.close()
 
             print(crl.getinfo(pycurl.RESPONSE_CODE))
             # print(crl.fp.getvalue())
-            # crl.close()
+            crl.close()
             
             '''
             while True:
