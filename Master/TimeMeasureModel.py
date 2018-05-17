@@ -70,10 +70,10 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
                 _exec = os.popen(command)
                 data = simplejson.loads(_exec.read())
                 try:
-                    if len(data['items']) != 0 and data['items'][0]['status']['conditions'][2]['type'] == 'Ready':
+                    if len(data['items']) != 0 and data['items'][0]['status']['conditions'][1]['type'] == 'Ready':
                         break
-                except Exception:
-                    pass
+                except Exception as ex:
+                    print(ex)
 
             print('Waiting for container to load model...')
             
