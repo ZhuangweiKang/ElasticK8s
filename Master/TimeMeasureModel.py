@@ -54,33 +54,32 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             cpu_limits = '1.0'
             start = time.time()
             k8sop.create_deployment(node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000)
-            print('Create deployment...')
+            print('Create deployment: %s' % deployment_name)
 
             svc_name = node_name + '-' + str(random.randint(1, 1000)) + '-service'
             selector_label = pod_label
             k8sop.create_svc(svc_name, selector_label)
-            print('Create service...')
+            print('Create service: %s' % svc_name)
             
-            url = 'http://%s:30000/predict' % node_address
-            crl = pycurl.Curl()
-            crl.setopt(crl.POST, 1)
-            crl.setopt(pycurl.URL, url)
-            crl.setopt(crl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
-            crl.setopt(pycurl.HTTPHEADER, ['Accept-Language: en'])
-            crl.setopt(pycurl.TIMEOUT, 1000)
             print('Waiting for container to load model...')
             # crl.perform()
 
             while True:
                 try:
+                    url = 'http://%s:30000/predict' % node_address
+                    crl = pycurl.Curl()
+                    crl.setopt(crl.POST, 1)
+                    crl.setopt(pycurl.URL, url)
+                    crl.setopt(crl.HTTPPOST, [("image", (crl.FORM_FILE, "owl.jpg"))])
+                    crl.setopt(pycurl.HTTPHEADER, ['Accept-Language: en'])
+                    # crl.setopt(pycurl.TIMEOUT, 1000)
+                    crl.setopt(pycurl)
                     crl.perform()
                     if crl.getinfo(crl.RESPONSE_CODE) == 200: 
                         break
+                    crl.close()
                 except pycurl.error as er:
                     print(er)
-
-            print(crl.getinfo(pycurl.RESPONSE_CODE))
-            crl.close()
 
             end = time.time()
             print('Time: %f' % end)
