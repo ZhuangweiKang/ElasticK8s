@@ -96,7 +96,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address, no
             duration = (end - start).seconds
             total_time.append(duration)
 
-            os.system('kubectl delete svc %s' % svc_name)
+            os.system('kubectl delete svc %s --force --now' % svc_name)
             os.system('kubectl delete deploy --all --now --force')
 
             
