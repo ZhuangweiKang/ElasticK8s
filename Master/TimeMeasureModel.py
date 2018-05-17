@@ -162,8 +162,10 @@ def timeMeasurementExperiment(hasImage):
             duration = end - start
             # total_time.append(measureContainerPrepareTime(pod_label))
             total_time.append(duration)
-            clear_deploy_service()
-
+            # clear_deploy_service()
+            os.system('kubectl delete svc %s' % svc_name)
+            os.system('kubectl delete deploy --all')
+            
             '''
             print('Waiting for pod to be deleted.')
             while True:
