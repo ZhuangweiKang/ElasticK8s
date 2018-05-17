@@ -7,21 +7,23 @@ from kubernetes import client, config
 
 class K8sOperations:
     # Create a deployment on a specific node
-    def create_deployment(self, node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests, cpu_limits, container_port=7000):
+    def create_deployment(self, node_name, deployment_name, pod_label, image_name, container_name,  cpu_requests=None, cpu_limits=None, container_port=7000):
         # Load config from default location
         config.load_kube_config()
         extension = client.ExtensionsV1beta1Api()
 
+        '''
         container_resource = client.V1ResourceRequirements(
             limits={'cpu': cpu_limits}, 
             requests={'cpu': cpu_requests})
-
+        '''
+        
         container = client.V1Container(
             name=container_name,
             image=image_name,
             image_pull_policy='IfNotPresent',
             ports=[client.V1ContainerPort(container_port=container_port)],
-            resources= container_resource,
+            # resources= container_resource,
             tty=True,
             stdin=True)
 
