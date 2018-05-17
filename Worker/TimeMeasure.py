@@ -1,6 +1,6 @@
 import zmq
 import os
-
+import time
 context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind('tcp://*:2555')
@@ -13,6 +13,7 @@ while True:
         _exec = os.popen(get_container_id)
         if _exec.read() == '':
             break
+    time.sleep(1)
     print('Container has been deleted.')
     if msg.split(':')[0] == 'False':
         command = 'docker rmi -f %s' % image
