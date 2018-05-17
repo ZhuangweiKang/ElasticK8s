@@ -8,6 +8,7 @@ import time
 import socket
 import pycurl
 import urllib
+import socket
 import random
 from K8sOperations import K8sOperations as K8sOp
 
@@ -64,6 +65,7 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
             print('Waiting for container to load model...')
             # crl.perform()
 
+            '''
             while True:
                 try:
                     url = 'http://%s:30000/predict' % node_address
@@ -79,7 +81,17 @@ def timeMeasurementExperiment(hasImage, output_file, node_name, node_address):
                     crl.close()
                 except pycurl.error as er:
                     print(er)
+            '''
 
+            while True:
+                try:
+                    sc=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+                    sc.settimeout(2)
+                    sc.connect(node_address, '30000')
+                    sc.close()
+                except Exception as ex:
+                    print(ex)
+                    
             end = time.time()
             print('Time: %f' % end)
 
