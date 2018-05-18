@@ -11,3 +11,17 @@ docgroupvandy/densenet169keras,72s,65s,79s,66s,66s,66s,68s,70s,69s,414s,103.5s
 docgroupvandy/densenet201keras,89s,441s,82s,80s,85s,96s,82s,81s,124s,83s,124.3s
 docgroupvandy/word2vec_google,179s,157s,156s,154s,153s,156s,154s,156s,158s,152s,157.5s
 docgroupvandy/word2vec_glove,107s,94s,94s,94s,95s,94s,94s,100s,93s,94s,95.9s
+
+
+docgroupvandy/xceptionkeras,31s,22s,39s,92s,25s,32s,23s,65s,29s,27s,38.5s
+docgroupvandy/vgg16keras,66s,105s,69s,127s,80s,63s,36s,264s,73s,80s,96.3s
+docgroupvandy/vgg19keras,57s,80s,61s,69s,327s,125s,43s,122s,85s,125s,109.4s
+docgroupvandy/resnet50keras,41s,38s,30s,30s,33s,28s,27s,117s,33s,32s,40.9s
+docgroupvandy/inceptionv3keras,57s,38s,35s,86s,105s,141s,44s,43s,50s,38s,63.7s
+docgroupvandy/inceptionresnetv2keras,167s,85s,149s,460s,90s,142s,101s,888s,441s,140s,266.3s
+docgroupvandy/mobilenetkeras,20s,17s,17s,17s,16s,24s,14s,17s,32s,22s,19.6s
+docgroupvandy/densenet121keras,51s,46s,47s,59s,74s,46s,50s,47s,46s,56s,52.2s
+docgroupvandy/densenet169keras,73s,72s,123s,102s,77s,64s,66s,67s,138s,65s,84.7s
+docgroupvandy/densenet201keras,85s,79s,83s,81s,79s,81s,81s,81s,79s,80s,80.9s
+docgroupvandy/word2vec_google,158s,154s,153s,153s,155s,154s,155s,155s,156s,154s,154.7s
+docgroupvandy/word2vec_glove,98s,94s,99s,105s,95s,95s,94s,94s,94s,95s,96.3s
